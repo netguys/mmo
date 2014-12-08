@@ -5,7 +5,8 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
     var canvas,			// Canvas DOM element
         ctx,			// Canvas rendering context
         keys,			// Keyboard input
-        localPlayer;	// Local player
+        localPlayer,
+        socket;	// Local player
 
     function Game() {}
     /**************************************************
@@ -15,6 +16,8 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         // Declare the canvas and rendering context
         canvas = document.getElementById("gameCanvas");
         ctx = canvas.getContext("2d");
+
+        socket = io.connect("http://localhost", {port: 8090, transports: ["websocket"]});
 
         // Maximise the canvas
         // HACK for uncorrected windows
@@ -47,6 +50,32 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
 
         // Window resize
         window.addEventListener("resize", this.onResize, false);
+
+        socket.on("connect", onSocketConnected);
+        socket.on("disconnect", onSocketDisconnect);
+        socket.on("new player", onNewPlayer);
+        socket.on("move player", onMovePlayer);
+        socket.on("remove player", onRemovePlayer);
+    };
+
+    function onSocketConnected() {
+        console.log("Connected to socket server");
+    };
+
+    function onSocketDisconnect() {
+        console.log("Disconnected from socket server");
+    };
+
+    function onNewPlayer(data) {
+        console.log("New player connected: "+data.id);
+    };
+
+    function onMovePlayer(data) {
+
+    };
+
+    function onRemovePlayer(data) {
+
     };
 
     // Keyboard key down
