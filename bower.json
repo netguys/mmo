@@ -3,9 +3,7 @@
   "version": "0.0.0",
   "homepage": "https://github.com/netguys/mmo",
   "moduleType": [
-    "amd",
-    "es6",
-    "globals"
+    "amd"
   ],
   "authors": [
     "Maks Romaniv"
