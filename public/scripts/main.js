@@ -15,7 +15,15 @@ require.config({
     paths: {
         init : 'init',
 
-        domready:   '../bower_components/requirejs-domready/domReady'
+        //core
+        gameLoop: 'core/gameLoop',
+
+        //game
+        Game: 'game/Game',
+        Keys: 'game/Keys',
+        Player: 'game/Player',
+
+        domready: '../bower_components/requirejs-domready/domReady'
     }
 });
 
