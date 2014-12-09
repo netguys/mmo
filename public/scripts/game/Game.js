@@ -36,6 +36,8 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         // Initialise the local player
         localPlayer = new Player(startX, startY);
 
+
+        remotePlayers = [];
         // Start listening for events
         this.setEventHandlers();
     };
@@ -58,8 +60,19 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         socket.on("remove player", onRemovePlayer);
     };
 
+    function playerById(id) {
+        var i;
+        for (i = 0; i < players.length; i++) {
+            if (players[i].id == id)
+                return players[i];
+        };
+
+        return false;
+    };
+
     function onSocketConnected() {
         console.log("Connected to socket server");
+        socket.emit("new player", {x: localPlayer.getX(), y: localPlayer.getY()});
     };
 
     function onSocketDisconnect() {
@@ -68,14 +81,35 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
 
     function onNewPlayer(data) {
         console.log("New player connected: "+data.id);
+        var newPlayer = new Player(data.x, data.y);
+        newPlayer.id = data.id;
+        remotePlayers.push(newPlayer);
     };
 
     function onMovePlayer(data) {
+        var movePlayer = playerById(data.id);
 
+        // Player not found
+        if (!movePlayer) {
+            console.log("Player not found: "+data.id);
+            return;
+        }
+
+        // Update player position
+        movePlayer.setX(data.x);
+        movePlayer.setY(data.y);
     };
 
     function onRemovePlayer(data) {
+        var removePlayer = playerById(this.id);
 
+        if (!removePlayer) {
+            util.log("Player not found: "+this.id);
+            return;
+        }
+
+        players.splice(players.indexOf(removePlayer), 1);
+        this.broadcast.emit("remove player", {id: this.id});
     };
 
     // Keyboard key down
@@ -114,7 +148,11 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
      ** GAME UPDATE
      **************************************************/
     Game.prototype.update = function () {
-        localPlayer.update(keys);
+
+        if (localPlayer.update(keys)) {
+            socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
+        }
+//        localPlayer.update(keys);
     };
 
     /**************************************************
@@ -123,6 +161,11 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
     Game.prototype.draw = function () {
         // Wipe the canvas clean
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        var i;
+        for (i = 0; i < remotePlayers.length; i++) {
+            remotePlayers[i].draw(ctx);
+        }
 
         // Draw the local player
         localPlayer.draw(ctx);

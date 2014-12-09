@@ -6,6 +6,14 @@ var socket, players;
 
 function init() {
     players = [];
+
+    socket = io.listen(8090);
+    socket.configure(function() {
+        socket.set('transports', ['websocket']);
+        socket.set('log level', 2);
+    });
+
+    setEventHenders();
 }
 
 function onSocketConnection( client ) {
@@ -30,22 +38,53 @@ function onNewPlayer(data) {
 }
 
 function onMovePlayer(data) {
+    var movePlayer = playerById(this.id);
 
+    // Player not found
+    if (!movePlayer) {
+        util.log("Player not found: "+this.id);
+        return;
+    };
+
+    // Update player position
+    movePlayer.setX(data.x);
+    movePlayer.setY(data.y);
+
+    // Broadcast updated position to connected socket clients
+    this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
+    util.log("X: " + movePlayer.getX());
 }
 
 function onClientDisconnect() {
     util.log('disconnet' + this.id);
+    var removePlayer = playerById(this.id);
+
+    // Player not found
+    if (!removePlayer) {
+        util.log("Player not found: "+this.id);
+        return;
+    };
+
+    // Remove player from players array
+    players.splice(players.indexOf(removePlayer), 1);
+
+    // Broadcast removed player to connected socket clients
+    this.broadcast.emit("remove player", {id: this.id});
 }
 
 function setEventHenders() {
     socket.sockets.on('connection', onSocketConnection);
 }
 
-socket = io.listen(8090);
-socket.configure(function() {
-    socket.set('transports', ['websocket']);
-    socket.set('log level', 2);
-});
+function playerById(id) {
+    var i;
+    for (i = 0; i < players.length; i++) {
+        if (players[i].id == id)
+            return players[i];
+    }
+
+    return false;
+};
 
 
 init();

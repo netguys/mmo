@@ -5,6 +5,7 @@
 define(function() {
 
     function Player (startX, startY) {
+
         this.x = startX;
         this.y = startY;
         this.moveAmount = 2;
@@ -24,6 +25,24 @@ define(function() {
         } else if (keys.right) {
             this.x += this.moveAmount;
         }
+
+        return true;
+    };
+
+    Player.prototype.getX = function() {
+        return this.x;
+    };
+
+    Player.prototype.getY = function() {
+        return this.y;
+    };
+
+    Player.prototype.setX = function(newX) {
+        this.x = newX;
+    };
+
+    Player.prototype.setY = function(newY) {
+        this.y = newY;
     };
 
     Player.prototype.draw = function(ctx) {
