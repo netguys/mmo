@@ -17,7 +17,9 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         canvas = document.getElementById("gameCanvas");
         ctx = canvas.getContext("2d");
 
-        socket = io.connect("http://localhost", {port: 8090, transports: ["websocket"]});
+
+        //TODO: make a server
+        socket = io( "http://10.96.10.64:8090", { transports: ["websocket"] } );
 
         // Maximise the canvas
         // HACK for uncorrected windows
