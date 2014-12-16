@@ -1,32 +1,30 @@
-var util = require('util'),
-    io = require('socket.io'),
-    Player = require('./server/Player').Player;
+var util = require("util"),
+    io = require("socket.io"),
+    Player = require("./server/Player").Player;
 
 var socket, players;
 
 function init() {
     players = [];
 
-    socket = io.listen(8090);
-    socket.configure(function() {
-        socket.set('transports', ['websocket']);
-        socket.set('log level', 2);
+    socket = io(8090, {
+        "transports" : ["websocket"]
     });
 
     setEventHenders();
 }
 
 function onSocketConnection( client ) {
-    util.log('New player connected' + client.id);
-    client.on('disconnect', onClientDisconnect);
-    client.on('new player', onNewPlayer);
-    client.on('move player', onMovePlayer)
+    util.log("New player connected" + client.id);
+    client.on("disconnect", onClientDisconnect);
+    client.on("new player", onNewPlayer);
+    client.on("move player", onMovePlayer)
 }
 
 function onNewPlayer(data) {
     var newPlayer = new Player(data.x, data.y)
 
-    this.broadcast.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
+    this.broadcast.emit("new player", {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
 
     var i, existingPlayer;
     for (i = 0; i < players.length; i++) {
@@ -56,7 +54,7 @@ function onMovePlayer(data) {
 }
 
 function onClientDisconnect() {
-    util.log('disconnet' + this.id);
+    util.log("disconnet" + this.id);
     var removePlayer = playerById(this.id);
 
     // Player not found
@@ -73,7 +71,7 @@ function onClientDisconnect() {
 }
 
 function setEventHenders() {
-    socket.sockets.on('connection', onSocketConnection);
+    socket.sockets.on("connection", onSocketConnection);
 }
 
 function playerById(id) {
