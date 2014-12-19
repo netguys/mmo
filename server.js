@@ -1,35 +1,37 @@
-var util = require("util"),
-    io = require("socket.io"),
-    Player = require("./server/Player").Player;
+var util = require('util'),
+    io = require('socket.io'),
+    Player = require('./server/Player').Player,
+    Step = require('./server/core/Step'),
+    Entity = require('./server/gameObjects/Entity');
 
-var socket, players;
+var socket, players, step;
 
-function init() {
+function init() {update
     players = [];
 
     socket = io(8090, {
-        "transports" : ["websocket"]
+        'transports' : ['websocket']
     });
 
     setEventHenders();
 }
 
 function onSocketConnection( client ) {
-    util.log("New player connected" + client.id);
-    client.on("disconnect", onClientDisconnect);
-    client.on("new player", onNewPlayer);
-    client.on("move player", onMovePlayer)
+    util.log('New player connected' + client.id);
+    client.on('disconnect', onClientDisconnect);
+    client.on('new player', onNewPlayer);
+    client.on('move player', onMovePlayer)
 }
 
 function onNewPlayer(data) {
     var newPlayer = new Player(data.x, data.y)
 
-    this.broadcast.emit("new player", {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
+    this.broadcast.emit('new player', {id: newPlayer.id, x: newPlayer.getX(), y: newPlayer.getY()})
 
     var i, existingPlayer;
     for (i = 0; i < players.length; i++) {
         existingPlayer = players[i];
-        this.emit("new player", {id: existingPlayer.id, x: existingPlayer.getX(), y: existingPlayer.getY()});
+        this.emit('new player', {id: existingPlayer.id, x: existingPlayer.getX(), y: existingPlayer.getY()});
     }
 
     players.push(newPlayer)
@@ -40,7 +42,7 @@ function onMovePlayer(data) {
 
     // Player not found
     if (!movePlayer) {
-        util.log("Player not found: "+this.id);
+        util.log('Player not found: '+this.id);
         return;
     };
 
@@ -49,17 +51,17 @@ function onMovePlayer(data) {
     movePlayer.setY(data.y);
 
     // Broadcast updated position to connected socket clients
-    this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
-    util.log("X: " + movePlayer.getX());
+    this.broadcast.emit('move player', {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
+    util.log('X: ' + movePlayer.getX());
 }
 
 function onClientDisconnect() {
-    util.log("disconnet" + this.id);
+    util.log('disconnet' + this.id);
     var removePlayer = playerById(this.id);
 
     // Player not found
     if (!removePlayer) {
-        util.log("Player not found: "+this.id);
+        util.log('Player not found: '+this.id);
         return;
     };
 
@@ -67,11 +69,11 @@ function onClientDisconnect() {
     players.splice(players.indexOf(removePlayer), 1);
 
     // Broadcast removed player to connected socket clients
-    this.broadcast.emit("remove player", {id: this.id});
+    this.broadcast.emit('remove player', {id: this.id});
 }
 
 function setEventHenders() {
-    socket.sockets.on("connection", onSocketConnection);
+    socket.sockets.on('connection', onSocketConnection);
 }
 
 function playerById(id) {
