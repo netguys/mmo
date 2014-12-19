@@ -15,7 +15,11 @@ function EventsManager(){
 util.inherits(EventsManager, events.EventEmitter);
 
 
-EventsManager.prototype.init = function () {};
+EventsManager.prototype.init = function () {
+    var me = this;
+
+    me.setMaxListeners(100000);
+};
 
 
 //make it a singletone, using a Global variable.
