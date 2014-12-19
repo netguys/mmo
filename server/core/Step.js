@@ -1,15 +1,15 @@
 /**
  * Created by alexey.moroz on 18.12.2014.
  *
- * Class which fires a pulse event on "at least" given timeout.
+ * Class which fires a pulse event on 'at least' given timeout.
  * (Large amount of code being executed, or large amount of synchronous
- *  code may delay the execution of "step:pulse" event )
+ *  code may delay the execution of 'step:pulse' event )
  *
  */
 
-var util = require("util"),
-    path = require("path"),
-    Subscriber = require( path.resolve( __dirname, "./Subscriber" ) );
+var util = require('util'),
+    path = require('path'),
+    Subscriber = require( path.resolve( __dirname, './Subscriber' ) );
 
 
 function Step(){}
@@ -32,9 +32,9 @@ Step.prototype.pulse = function () {
     var me = this,
         currentTime = Date.now();
 
-    //console.log("PULSE: ", currentTime);
+    //console.log('PULSE: ', currentTime);
 
-    me.emit("step:pulse", currentTime);
+    me.emit('step:pulse', currentTime);
 
     //setTimeout sets a function to be executed with delay on a main EventLoop, so this will be executed asynchronously.
     setTimeout(function () {

@@ -1,9 +1,9 @@
 /**
  * Created by alexey.moroz on 18.12.2014.
  */
-var util = require("util"),
-    path = require("path"),
-    Subscriber = require( path.resolve( __dirname, "../core/Subscriber" ) );
+var util = require('util'),
+    path = require('path'),
+    Subscriber = require( path.resolve( __dirname, '../core/Subscriber' ) );
 
 
 function Entity(){};
@@ -25,12 +25,12 @@ Entity.prototype.init = function(){
 Entity.prototype.setupListeneners = function () {
     var me = this;
 
-    me.on("step:pulse", me.onStepPulse.bind(me));
+    me.on('step:pulse', me.onStepPulse.bind(me));
 };
 
 
 Entity.prototype.update = function(dt){
-    console.log("update call with dt:", dt);
+    console.log('update call with dt:', dt);
 };
 
 Entity.prototype.onStepPulse = function (globalTime) {

@@ -5,9 +5,9 @@
  *
  */
 
-var util = require("util"),
-    path = require("path"),
-    EventsManager = require(path.resolve(__dirname, "./EventsManager.js"));
+var util = require('util'),
+    path = require('path'),
+    EventsManager = require(path.resolve(__dirname, './EventsManager.js'));
 
 function Subscriber(){};
 

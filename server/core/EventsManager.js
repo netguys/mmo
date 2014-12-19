@@ -5,8 +5,8 @@
  *
  */
 
-var util = require("util");
-var events = require("events");
+var util = require('util');
+var events = require('events');
 
 function EventsManager(){
     events.EventEmitter.call(this);

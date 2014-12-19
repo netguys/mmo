@@ -3,10 +3,10 @@
  */
 
 
-var util = require("util"),
-    io = require("socket.io"),
-    Step = require("./server/core/Step"),
-    Entity = require("./server/gameObjects/Entity");
+var util = require('util'),
+    io = require('socket.io'),
+    Step = require('./server/core/Step'),
+    Entity = require('./server/gameObjects/Entity');
 
 
 
