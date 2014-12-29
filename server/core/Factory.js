@@ -39,7 +39,7 @@ Factory.prototype.createClassesDesc = function () {
     }
 };
 
-Factory.prototype.createEntity = function (className, params) {
+Factory.prototype.create = function (className, params) {
     var me = this,
         obj;
 

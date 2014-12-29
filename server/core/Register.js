@@ -15,11 +15,28 @@ function Register(){}
 Register.prototype.init = function () {
     var me = this;
 
-    me.pool = [];
+    me.pool = {};
 };
 
-Register.prototype.createEntity = function () {
+Register.prototype.createEntity = function (className, params) {
+    var me = this,
+        obj = Factory.create(className, params);
 
+    me.pool[ obj.id ] = obj;
+
+    return obj;
+};
+
+Register.prototype.destroy = function () {
+    var me = this,
+        arg0 = arguments[0];
+
+    if( typeof(arg0) === "number" ){
+        arg0 = me.pool[arg0];
+    }
+
+    arg0.destroy();
+    delete me.pool[arg0.id];
 };
 
 

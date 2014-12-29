@@ -25,6 +25,7 @@ Entity.prototype.init = function(){
 Entity.prototype.setupListeneners = function () {
     var me = this;
 
+    //should use "on" only (in current implementation).
     me.on('step:pulse', me.onStepPulse.bind(me));
 };
 
@@ -40,5 +41,9 @@ Entity.prototype.onStepPulse = function (globalTime) {
     me.localTime = globalTime;
 };
 
+
+Entity.prototype.destroy = function () {
+    this.removeAllLocalListeners();
+};
 
 module.exports = Entity;

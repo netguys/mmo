@@ -17,10 +17,29 @@ Subscriber.prototype = EventsManager;
 Subscriber.prototype.init = function () {
     var me = this;
 
+    me.listening = {};
     me.setupListeneners();
 };
 
 //no default listeners. May be added in future.
 Subscriber.prototype.setupListeneners = function () {};
+
+Subscriber.prototype.on = function () {
+    Subscriber.prototype.on.apply(this, arguments);
+
+    this.listening[ arguments[0] ] = arguments[1];
+};
+
+Subscriber.prototype.removeAllLocalListeners = function () {
+    var me = this,
+        event,
+        listener;
+
+    for(event in me.listening){
+        listener = me.listening[event];
+
+        me.prototype.removeListener(event, listener);
+    }
+};
 
 module.exports = Subscriber;
