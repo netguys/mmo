@@ -24,7 +24,8 @@ Subscriber.prototype.init = function () {
 //no default listeners. May be added in future.
 Subscriber.prototype.setupListeneners = function () {};
 
-Subscriber.prototype.on = function () {
+//TODO: Deal with it.
+Subscriber.on = function () {
     Subscriber.prototype.on.apply(this, arguments);
 
     this.listening[ arguments[0] ] = arguments[1];

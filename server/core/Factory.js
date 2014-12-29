@@ -16,7 +16,7 @@ Factory.prototype.init = function () {
     var me = this;
 
     me.entities = {};
-    me.classMap = require( path.resolve( process.env.PATH, './configs/class_map.json' ) );
+    me.classMap = require( path.resolve( EXE_PATH, './server/configs/class_map.json' ) );
 
     me.createClassesDesc( me.classMap );
 
@@ -27,15 +27,15 @@ Factory.prototype.init = function () {
 Factory.prototype.createClassesDesc = function () {
     var me = this,
         className,
-        desc;
+        pathToFile;
 
     me.classes = {};
 
     for(className in me.classMap){
         //gets function description.
-        desc = require( path.resolve( process.env.PATH, me.classMap[ className ] ) );
+        pathToFile = path.resolve( path.resolve( path.dirname( require.main.filename ), me.classMap[ className ] ) );
 
-        me.classes[className] = desc;
+        me.classes[className] = require(pathToFile);
     }
 };
 
@@ -44,7 +44,7 @@ Factory.prototype.create = function (className, params) {
         obj;
 
     if(! me.classes[ className ]){
-        console.error("No such registered class: ", className);
+        console.error('No such registered class: ', className);
         return;
     }
 

@@ -5,10 +5,11 @@
  */
 
 var util = require('util'),
-    u = require('./server/utils'),
-    path = require('path'),
-    Entity = require( path.resolve( __dirname, '../gameObjects/Entity' ) ),
-    BoundingBox = require( path.resolve( __dirname, '../collisions/BoundingShapes' ) ).BoundingBox;
+    u = getCustomUtils(),
+
+
+    Entity = require( PATH.resolve( __dirname, '../gameObjects/Entity' ) ),
+    BoundingBox = require( PATH.resolve( __dirname, '../core/collisions/BoundingShapes' ) ).BoundingBox;
 
 
 
@@ -23,7 +24,7 @@ Projectile.prototype.setupListeneners = function () {
     var me = this;
     Projectile.super_.prototype.setupListeneners.apply(me, arguments);
 
-    //TODO: collision detection in comehow more accurate manner.
+    //TODO: collision detection in somehow more accurate manner.
     //me.on('entity:moveInitiated', me.onEntityMoved);
 };
 

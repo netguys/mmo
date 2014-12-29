@@ -6,11 +6,10 @@
  */
 
 var util = require('util'),
-    path = require('path'),
 
-    u = require('./server/utils'),
+    u = getCustomUtils(),
 
-    Subscriber = require( path.resolve( __dirname, '../core/Subscriber' ) );
+    Subscriber = require( PATH.resolve( __dirname, '../Subscriber' ) );
 
 
 /**
@@ -27,7 +26,7 @@ BoundingCircle.constructor = function () {
 
 BoundingCircle.prototype.init = function (entity, size) {
     var me = this;
-    BoundingCircle.super_prototype.apply(me, arguments);
+    BoundingCircle.super_.prototype.apply(me, arguments);
 
     me.master = entity;
     me.radius = size;
@@ -89,7 +88,7 @@ BoundingBox.constructor = function () {
 
 BoundingBox.prototype.init = function (entity, hw, hh) {
     var me = this;
-    BoundingBox.super_prototype.apply(me, arguments);
+    BoundingBox.super_.prototype.init.apply(me, arguments);
 
     me.master = entity;
     me.hw = hw; //half width

@@ -5,7 +5,7 @@
  */
 var util = require('util'),
     path = require('path'),
-    Factory = require( path.resolve( process.env.PATH, "./server/core/Factory" ) );
+    Factory = require( path.resolve( EXE_PATH, "./server/core/Factory" ) );
 
 
 

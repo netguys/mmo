@@ -22,7 +22,7 @@ utils.calcDistance = function (p1, p2) {
 
 utils.vecLength = function (){
     var x, y;
-    if(x = arguments[0] instanceof Object){// x - vector object.
+    if( (x = arguments[0]) instanceof Object){// x - vector object.
         return Math.sqrt(x.x * x.x + x.y * x.y);
     }
 
@@ -86,13 +86,27 @@ utils.lineLength = function (line) {
  * @returns {*}
  */
 utils.mulVecScalar = function (vec, value) {
-    if(typeof(value) === 'Number'){
+    if(typeof(value) === 'number'){
         vec.x *= value;
         vec.y *= value;
 
         return vec;
     }
 };
+
+utils.getId = (function () {
+    if(global.__getSomeId){
+        return global.__getSomeId;
+    }
+    global.__getSomeId = (function () {
+        var id = 0;
+        return function(){
+            return id++;
+        }
+    })();
+
+    return global.__getSomeId;
+})();
 
 
 

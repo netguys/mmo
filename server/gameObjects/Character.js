@@ -5,15 +5,15 @@
  * Describes an abstract character which may move to a destination point.
  */
 var util = require('util'),
-    u = require('./server/utils'),
+    u = getCustomUtils(),
     path = require('path'),
 
     Register = require("../core/Register"),
 
     Entity = require( path.resolve( __dirname, '../gameObjects/Entity' ) ),
-    BoundingBox = require( path.resolve( __dirname, '../collisions/BoundingShapes' ) ).BoundingBox,
+    BoundingBox = require( path.resolve( __dirname, '../core/collisions/BoundingShapes' ) ).BoundingBox,
 
-    CHARACTER_CONFIG = require( path.resolve( __dirname, '../../configs/character_default.json' ) )
+    CHARACTER_CONFIG = require( path.resolve( EXE_PATH, './server/configs/character_default.json' ) )
 
 
 
@@ -28,7 +28,6 @@ Character.constructor = function () {
 Character.prototype.init = function (params) {
     var me = this;
     Character.super_.prototype.init.apply(me, arguments);
-
     me.mv = { x : 0, y : 0 }; //normalized vector
 
     //TODO: utils.applyConfig method should be provided
@@ -41,11 +40,11 @@ Character.prototype.init = function (params) {
 
 
     me.bBox = new BoundingBox();
-    me.bBox.init(params.hw, params.hh);
+    me.bBox.init(me, CHARACTER_CONFIG.hw, CHARACTER_CONFIG.hh);
 };
 
 
-Character.prototype.setMoveTo = function (x, y) {
+Character.prototype.moveTo = function (x, y) {
     var me = this,
         dstPoint = { x : x, y : y },
         vec = { x : x - me.pos.x, y : y - me.pos.y};
@@ -93,3 +92,6 @@ Character.prototype.update = function (dt) {
 
 
 };
+
+
+module.exports = Character;
