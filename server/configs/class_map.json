@@ -1,0 +1,5 @@
+{
+  "Entity" : "./server/gameObjects/Entity",
+  "Character" : "./server/gameObjects/Character",
+  "Projectile" : "./server/gameObjects/Projectile"
+}

@@ -25,14 +25,18 @@ EventsManager.prototype.init = function () {
 //make it a singletone, using a Global variable.
 module.exports = (function () {
 
-    if(global.__EventsManager){
-        return global.__EventsManager;
+    if(!global.Singletones){
+        global.Singletones = {};
     }
 
-    global.__EventsManager = new EventsManager();
-    global.__EventsManager.init();
+    if(global.Singletones.EventsManager){
+        return global.Singletones.EventsManager;
+    }
 
-    return global.__EventsManager;
+    global.Singletones.EventsManager = new EventsManager();
+    global.Singletones.EventsManager.init();
+
+    return global.Singletones.EventsManager;
 })();
 
 

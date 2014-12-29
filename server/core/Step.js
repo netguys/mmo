@@ -32,12 +32,11 @@ Step.prototype.pulse = function () {
     var me = this,
         currentTime = Date.now();
 
-    console.log('Update START');
     me.emit('step:pulse', currentTime);
-    console.log("Update END. Time took: ", (Date.now() - currentTime ) );
 
-    //setTimeout sets a function to be executed with delay on a main EventLoop, so this will be executed asynchronously.
-    process.nextTick(function () {
+    //setImmediate sets a function to be executed on a next iteration of an EventLoop,
+    //setting it in queue with other I\O or timeout callbacks in order of acceptance.
+    setImmediate(function () {
         me.pulse();
     });
 

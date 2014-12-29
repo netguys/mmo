@@ -3,13 +3,12 @@
  */
 var util = require('util'),
     path = require('path'),
+    u = require( path.resolve( __dirname, '../utils') ),
     Subscriber = require( path.resolve( __dirname, '../core/Subscriber' ) );
 
 
 function Entity(){};
 util.inherits(Entity, Subscriber);
-
-
 Entity.constructor = function () {
     Entity.super_.constructor.apply(this, arguments);
 };
@@ -19,6 +18,7 @@ Entity.prototype.init = function(){
     var me = this;
     Entity.super_.prototype.init.apply(me, arguments);
 
+    me.id = u.getId();
     me.localTime = Date.now();
 };
 
@@ -29,20 +29,11 @@ Entity.prototype.setupListeneners = function () {
 };
 
 
-Entity.prototype.update = function(dt){
-    var k = "",
-        tmp;
-    for(var i=0; i < 100000; i++){
-        k = Math.sin(Math.random()*100.3)*Math.cos(Math.random()*100.444)/100.000/Math.log(1232)*Math.acos(Math.cos(Math.random()*dt));
-        tmp = new Entity();
-    }
-    return k;
-};
+Entity.prototype.update = function(dt){};
 
 Entity.prototype.onStepPulse = function (globalTime) {
     var me = this,
         dt = globalTime - me.localTime;
-
 
     me.update(dt);
 
