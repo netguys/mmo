@@ -8,14 +8,14 @@ var util = require('util'),
     u = getCustomUtils(),
     path = require('path'),
 
-    Register = require("../core/Register"),
+    Register = Singletones.Register,
 
     Entity = require( path.resolve( __dirname, '../gameObjects/Entity' ) ),
     BoundingBox = require( path.resolve( __dirname, '../core/collisions/BoundingShapes' ) ).BoundingBox,
 
     CHARACTER_CONFIG = require( path.resolve( EXE_PATH, './server/configs/character_default.json' ) )
 
-
+console.log("CHAR Register: ", Register);
 
 function Character(){};
 util.inherits(Character, Entity);
@@ -59,8 +59,7 @@ Character.prototype.moveTo = function (x, y) {
 Character.prototype.shoot = function (x, y) {
     var me = this;
 
-    //TODO: Implement Register
-    Register.createEntity("Projectile", {
+    return Register.createEntity( "Projectile", {
         direction : u.normalize( { x : x - me.pos.x, y : y - me.pos.y} ),
         velocity : 15,
         pos : {

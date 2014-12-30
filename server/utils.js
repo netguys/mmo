@@ -4,7 +4,10 @@
 
 var utils = {};
 
-
+utils.inherits = function (child, parent) {
+    child.prototype = new parent();
+    child.superclass = parent;
+};
 
 utils.measureTime = function(msg, fn){
     var t = 0;

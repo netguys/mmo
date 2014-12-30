@@ -9,9 +9,6 @@ var util = require('util'),
 
 function Entity(){};
 util.inherits(Entity, Subscriber);
-Entity.constructor = function () {
-    Entity.super_.constructor.apply(this, arguments);
-};
 
 
 Entity.prototype.init = function(){

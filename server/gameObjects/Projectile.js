@@ -36,10 +36,10 @@ Projectile.prototype.init = function (params) {
     me.mv = params.direction; //normalized vector
     me.v = params.velocity; //numerical value
 
-    me.pos = params.position;
+    me.pos = params.pos;
 
     me.bBox = new BoundingBox();
-    me.bBox.init(params.hw, params.hh);
+    me.bBox.init(me, params.hw, params.hh);
 };
 
 
@@ -85,4 +85,4 @@ Projectile.prototype.onCollisionDetected = function (entity, cv, initiator) {
 
 };
 
-
+module.exports = Projectile;

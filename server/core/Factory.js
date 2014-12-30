@@ -5,8 +5,7 @@
  * Class intended for Entities creation, will assign ids and
  *
  */
-var util = require('util'),
-    path = require('path');
+var util = require('util');
 
 
 function Factory(){}
@@ -16,9 +15,7 @@ Factory.prototype.init = function () {
     var me = this;
 
     me.entities = {};
-    me.classMap = require( path.resolve( EXE_PATH, './server/configs/class_map.json' ) );
-
-    me.createClassesDesc( me.classMap );
+    me.classMap = require( PATH.resolve( EXE_PATH, './server/configs/class_map.json' ) );
 
     //TODO: Make a global scope to avoid "require("path/to/class/file")" in all classes?
     //global.Game = me.classes;
@@ -33,13 +30,13 @@ Factory.prototype.createClassesDesc = function () {
 
     for(className in me.classMap){
         //gets function description.
-        pathToFile = path.resolve( path.resolve( path.dirname( require.main.filename ), me.classMap[ className ] ) );
+        pathToFile = PATH.resolve( PATH.resolve( PATH.dirname( require.main.filename ), me.classMap[ className ] ) );
 
         me.classes[className] = require(pathToFile);
     }
 };
 
-Factory.prototype.create = function (className, params) {
+Factory.prototype.createInstance = function (className, params) {
     var me = this,
         obj;
 
@@ -58,21 +55,19 @@ Factory.prototype.create = function (className, params) {
 //make it a singletone, using a Global variable.
 module.exports = (function () {
 
+    console.log("Factory require call.");
     if(!global.Singletones){
         global.Singletones = {};
+        console.log("Creating Singletones obj.")
     }
 
     if(global.Singletones.Factory){
+        console.log("Factory exists. Returning.");
         return global.Singletones.Factory;
     }
-
+    console.log("Creating new Factory.");
     global.Singletones.Factory = new Factory();
     global.Singletones.Factory.init();
 
     return global.Singletones.Factory;
 })();
-
-
-
-
-

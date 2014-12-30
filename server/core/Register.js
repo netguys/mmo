@@ -8,7 +8,6 @@ var util = require('util'),
     Factory = require( path.resolve( EXE_PATH, "./server/core/Factory" ) );
 
 
-
 function Register(){}
 
 
@@ -20,7 +19,7 @@ Register.prototype.init = function () {
 
 Register.prototype.createEntity = function (className, params) {
     var me = this,
-        obj = Factory.create(className, params);
+        obj = Factory.createInstance(className, params);
 
     me.pool[ obj.id ] = obj;
 
@@ -45,14 +44,18 @@ Register.prototype.destroy = function () {
 //make it a singletone, using a Global variable.
 module.exports = (function () {
 
+    console.log("Register required.");
     if(!global.Singletones){
         global.Singletones = {};
+        console.log("Creating Singletones obj.")
     }
 
     if(global.Singletones.Register){
+        console.log("Register exists. Returning.");
         return global.Singletones.Register;
     }
 
+    console.log("Creating new Register.");
     global.Singletones.Register = new Register();
     global.Singletones.Register.init();
 
