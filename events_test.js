@@ -22,40 +22,35 @@ var Factory = require( PATH.resolve( EXE_PATH, "./server/core/Factory" ) ),
 //Needed to be called after init of all the Singletones, for ALL the classes to obtain a ref on them.
 Factory.createClassesDesc();
 
-var //u = require(path.resolve( process.env.PATH, './server/utils' )),
+var u = require( PATH.resolve( EXE_PATH, './server/utils' )),
     io = require('socket.io'),
-    Factory = require( PATH.resolve( EXE_PATH, "./server/core/Factory" ) ),
-
-    Step = require('./server/core/Step'),
-    Entity = require('./server/gameObjects/Entity'),
-
-
-    execFolder;
-
-
-
-
-console.log("MAIN Register: ", Register);
+    Step = require('./server/core/Step');
 
 var char = Register.createEntity( "Character", {
         position : {
-            x : 0,
-            y : 0
+            x : 1,
+            y : 1
         }
     }),
     proj;
 
-char.moveTo(10, 10);
+char.moveTo(1, 21);
 
-proj = char.shoot(-10, -10)
+proj = char.shoot(21, 1)
 
 //console.log("char === ", char, "\n");
 //console.log("proj === ", proj, "\n");
 
-console.log("Reg: ", Register);
-Register.destroy(0);
-console.log("\n\nReg: ", Register);
+var step = new Step();
+step.init();
 
+
+step.start();
+setTimeout(function () {
+    step.stop();
+    console.log('char ===', char);
+    console.log('\n\nproj ===', proj);
+}, 5000);
 //startPing();
 //
 //step.start();

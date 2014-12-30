@@ -48,8 +48,8 @@ Projectile.prototype.update = function (dt) {
         dS = me.v * dt/1000;
 
     //setup artificial boundaries for Projectile to not be able to move if its not in 0,0 500,500 rectangle.
-    if( me.pos.x <= 0
-        || me.pos.y <= 0
+    if( me.pos.x < 0
+        || me.pos.y < 0
         || me.pos.x >= 500
         || me.pos.y >= 500 ){
         return;

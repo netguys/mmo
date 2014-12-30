@@ -24,6 +24,7 @@ Step.prototype.init = function (timeout) {
     Step.super_.prototype.init.apply(me, arguments);
 
     me.stepTimeout = timeout;
+    me.stopped = true;
 };
 
 
@@ -34,6 +35,9 @@ Step.prototype.pulse = function () {
 
     me.emit('step:pulse', currentTime);
 
+    if(me.stopped){
+       return;
+    }
     //setImmediate sets a function to be executed on a next iteration of an EventLoop,
     //setting it in queue with other I\O or timeout callbacks in order of acceptance.
     setImmediate(function () {
@@ -45,7 +49,12 @@ Step.prototype.pulse = function () {
 
 
 Step.prototype.start = function () {
+    this.stopped = false;
     this.pulse();
+};
+
+Step.prototype.stop = function () {
+    this.stopped = true;
 };
 
 

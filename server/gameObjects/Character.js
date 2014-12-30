@@ -15,7 +15,6 @@ var util = require('util'),
 
     CHARACTER_CONFIG = require( path.resolve( EXE_PATH, './server/configs/character_default.json' ) )
 
-console.log("CHAR Register: ", Register);
 
 function Character(){};
 util.inherits(Character, Entity);
@@ -61,7 +60,7 @@ Character.prototype.shoot = function (x, y) {
 
     return Register.createEntity( "Projectile", {
         direction : u.normalize( { x : x - me.pos.x, y : y - me.pos.y} ),
-        velocity : 15,
+        velocity : 1,
         pos : {
             x : me.pos.x,
             y : me.pos.y
