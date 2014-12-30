@@ -12,6 +12,7 @@ var util = require('util'),
 function Subscriber(){};
 
 //all the children will have methods of a Singleton EventsManager, which will refer to single EventEmitter.
+util.inherits(Subscriber, EventsManager.constructor);
 Subscriber.prototype = EventsManager;
 
 Subscriber.prototype.init = function () {
@@ -25,8 +26,8 @@ Subscriber.prototype.init = function () {
 Subscriber.prototype.setupListeneners = function () {};
 
 //TODO: Deal with it.
-Subscriber.on = function () {
-    Subscriber.prototype.on.apply(this, arguments);
+Subscriber.prototype.on = function () {
+    Subscriber.super_.prototype.on.apply(this, arguments);
 
     this.listening[ arguments[0] ] = arguments[1];
 };
@@ -39,7 +40,7 @@ Subscriber.prototype.removeAllLocalListeners = function () {
     for(event in me.listening){
         listener = me.listening[event];
 
-        me.prototype.removeListener(event, listener);
+        me.removeListener(event, listener);
     }
 };
 

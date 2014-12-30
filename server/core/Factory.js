@@ -55,17 +55,13 @@ Factory.prototype.createInstance = function (className, params) {
 //make it a singletone, using a Global variable.
 module.exports = (function () {
 
-    console.log("Factory require call.");
     if(!global.Singletones){
         global.Singletones = {};
-        console.log("Creating Singletones obj.")
     }
 
     if(global.Singletones.Factory){
-        console.log("Factory exists. Returning.");
         return global.Singletones.Factory;
     }
-    console.log("Creating new Factory.");
     global.Singletones.Factory = new Factory();
     global.Singletones.Factory.init();
 

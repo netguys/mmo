@@ -44,18 +44,14 @@ Register.prototype.destroy = function () {
 //make it a singletone, using a Global variable.
 module.exports = (function () {
 
-    console.log("Register required.");
     if(!global.Singletones){
         global.Singletones = {};
-        console.log("Creating Singletones obj.")
     }
 
     if(global.Singletones.Register){
-        console.log("Register exists. Returning.");
         return global.Singletones.Register;
     }
 
-    console.log("Creating new Register.");
     global.Singletones.Register = new Register();
     global.Singletones.Register.init();
 
