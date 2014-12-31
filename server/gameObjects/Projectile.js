@@ -20,9 +20,9 @@ Projectile.constructor = function () {
     Projectile.super_.constructor.apply(this, arguments);
 };
 
-Projectile.prototype.setupListeneners = function () {
+Projectile.prototype.setupListeners = function () {
     var me = this;
-    Projectile.super_.prototype.setupListeneners.apply(me, arguments);
+    Projectile.super_.prototype.setupListeners.apply(me, arguments);
 
     //TODO: collision detection in somehow more accurate manner.
     //me.on('entity:moveInitiated', me.onEntityMoved);

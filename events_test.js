@@ -24,7 +24,16 @@ Factory.createClassesDesc();
 
 var u = require( PATH.resolve( EXE_PATH, './server/utils' )),
     io = require('socket.io'),
-    Step = require('./server/core/Step');
+    Step = require('./server/core/Step'),
+    Player = require('./server/core/lobby/Player');
+
+
+
+var p1 = new Player();
+p1.init({
+    userId : u.getId(),
+    userName : "ksusha"
+});
 
 var char = Register.createEntity( "Character", {
         position : {
@@ -50,43 +59,7 @@ setTimeout(function () {
     step.stop();
     console.log('char ===', char);
     console.log('\n\nproj ===', proj);
-}, 5000);
-//startPing();
-//
-//step.start();
-//
-//var step = new Step(),
-//    entitiesNum =
-// 100,
-//    entities = [],
-//    entity,
-//    i;
-//
-//
-//
-//
-//for(i = 0; i < entitiesNum; i++ ){
-//    entity = new Entity();
-//    entity.init();
-//
-//    entities.push(entity);
-//}
-//
-//var startPing = (function(){
-//    var counter = 0,
-//        pingFunc = function (){
-//            console.log("PING! ", counter);
-//            counter++;
-//            setTimeout(function () {
-//                pingFunc();
-//            }, 1000);
-//        };
-//
-//    return pingFunc;
-//})();
+    console.log("\n\np1.changes", p1.changes.popChanges());
+}, 2000);
 
-
-//step.init(1000);
-//entity.init();
-//
 

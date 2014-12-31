@@ -19,11 +19,11 @@ Subscriber.prototype.init = function () {
     var me = this;
 
     me.listening = {};
-    me.setupListeneners();
+    me.setupListeners();
 };
 
 //no default listeners. May be added in future.
-Subscriber.prototype.setupListeneners = function () {};
+Subscriber.prototype.setupListeners = function () {};
 
 //TODO: Deal with it.
 Subscriber.prototype.on = function () {

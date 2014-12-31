@@ -11,15 +11,17 @@ function Entity(){};
 util.inherits(Entity, Subscriber);
 
 
-Entity.prototype.init = function(){
+Entity.prototype.init = function(params){
     var me = this;
     Entity.super_.prototype.init.apply(me, arguments);
 
     me.id = u.getId();
     me.localTime = Date.now();
+
+    me.emit("entity:created", me, params);
 };
 
-Entity.prototype.setupListeneners = function () {
+Entity.prototype.setupListeners = function () {
     var me = this;
 
     //should use "on" only (in current implementation).
@@ -40,7 +42,10 @@ Entity.prototype.onStepPulse = function (globalTime) {
 
 
 Entity.prototype.destroy = function () {
-    this.removeAllLocalListeners();
+    var me = this;
+
+    me.removeAllLocalListeners();
+    me.emit("entity:destroyed", me);
 };
 
 module.exports = Entity;
