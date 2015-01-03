@@ -5,22 +5,6 @@
 /**
  * Global constants and functions declaration.
  */
-global.PATH = require('path'); //path module
-global.EXE_PATH = PATH.resolve( PATH.dirname( require.main.filename ) ); //folder of an executing script
-
-//function returning ./server/utils class. (Needed to improve understanding)
-global.getCustomUtils = function () {
-    return require( PATH.resolve(EXE_PATH, './server/utils') );
-};
-
-
-
-//creation of singletones section
-var Factory = require( PATH.resolve( EXE_PATH, "./server/core/Factory" ) ),
-    Register = require( PATH.resolve( EXE_PATH, "./server/core/Register" ) );
-
-//Needed to be called after init of all the Singletones, for ALL the classes to obtain a ref on them.
-Factory.createClassesDesc();
 
 var u = require( PATH.resolve( EXE_PATH, './server/utils' )),
     io = require('socket.io'),

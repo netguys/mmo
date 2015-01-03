@@ -9,11 +9,11 @@ var u = getCustomUtils(),
 function Connector(){}
 
 
-    Connector.prototype.init = function ( params ) {
-        var me = this;
+Connector.prototype.init = function ( params ) {
+    var me = this;
 
-        me.server = server;
-        me.users = {};
+    me.server = params.server;
+    me.users = {};
 
     me.server.on("connection", me.onConnection.bind(me) );
 };

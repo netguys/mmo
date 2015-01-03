@@ -23,7 +23,7 @@ Player.prototype.init = function (params) {
 
     Player.super_.prototype.init.apply(me, arguments);
 
-    me.gameStart();
+    //me.gameStart();
 };
 
 
@@ -39,15 +39,17 @@ Player.prototype.gameStart = function () {
 Player.prototype.setupListeners = function () {
     var me = this;
 
+    //handling of entity changes.
     me.on( 'entity:created', me.onEntityInitialized.bind(me) );
     me.on( 'entity:destroyed', me.onEntityDestroyed.bind(me) );
 
     me.on( "entity:moveInitiated" , me.onEntityMoved.bind(me) );
 
-
+    //attempt to flush possible changes on the end of update.
     me.on( "step:pulseEnd", me.flushChanges.bind(me) );
 
 
+    //listening to socket events.
     me.on( 'socket:' + me.userId + '.command', me.onCommand.bind(me) );
     me.on( 'socket:' + me.userId + '.updateProceed', me.onUpdateProceed.bind(me) );
 };

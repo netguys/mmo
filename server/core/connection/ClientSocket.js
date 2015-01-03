@@ -6,7 +6,7 @@
  */
 
 var util = require('util'),
-    Subscriber = require( PATH.resolve( EXEC_PATH, './server/core/Subscriber' ) );
+    Subscriber = require( PATH.resolve( EXE_PATH, './server/core/Subscriber' ) );
 
 
 function ClientSocket(){}

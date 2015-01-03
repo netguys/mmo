@@ -2,5 +2,5 @@
   "Entity" : "./server/gameObjects/Entity",
   "Character" : "./server/gameObjects/Character",
   "Projectile" : "./server/gameObjects/Projectile",
-  "ClientSocket" : "./server/core/connection"
+  "ClientSocket" : "./server/core/connection/ClientSocket"
 }
