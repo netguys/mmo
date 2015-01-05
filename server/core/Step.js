@@ -33,8 +33,9 @@ Step.prototype.pulse = function () {
     var me = this,
         currentTime = Date.now();
 
-    me.emit('step:pulse', currentTime);
+    me.emit( 'step:pulse', currentTime );
 
+    me.emit( 'step:pulseEnd' ); //will be handled only by Player class objects.
     if(me.stopped){
        return;
     }

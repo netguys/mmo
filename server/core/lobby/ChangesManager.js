@@ -34,7 +34,7 @@ ChangesManager.prototype.init = function (params) {
  * @param type
  * @param values
  */
-ChangesManager.prototype.appendChange = function (id, type, values) {
+ChangesManager.prototype.appendChange = function (id, className, type, values) {
     var me = this,
         changes = me.changes;
 
@@ -42,9 +42,9 @@ ChangesManager.prototype.appendChange = function (id, type, values) {
         changes[id] = {};
     }
 
-    // case when entity was created, alive and destroyed but due to
-    // Player latency, changed didn't flushed to client in time, and he didn't
-    // received "creation" change, so he doesn't need "destroy" as well.
+    // case when entity was created, lived some time and destroyed but due to
+    // Player latency, changes didn't flush to client in time, and he didn't
+    // receive "creation" change, so he doesn't need "destroy" as well.
 
     if(changes[id][ENTITY_CREATED] && ( type === ENTITY_DESTROYED ) ){
         delete changes[id];
@@ -57,6 +57,7 @@ ChangesManager.prototype.appendChange = function (id, type, values) {
     }
 
     changes[id][type] = values;
+    changes[id][type].className = className;
 
     if(type === ENTITY_DESTROYED){
         changes[id] = {

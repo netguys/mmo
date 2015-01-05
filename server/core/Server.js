@@ -19,48 +19,69 @@ util.inherits(Server, Subscriber);
 
 Server.prototype.init = function (params) {
     var me = this;
+    Server.super_.prototype.init.apply(me, arguments);
 
     me.io = params.io; //socket io object
     me.app = params.app; //express app
+    me.httpServer = params.httpServer; //http server
 
     me.step = new Step();
     me.step.init();
 
     me.users = {};
 
+    //listeners on express app.
     me.app.use("/game", express.static( PATH.resolve( EXE_PATH, './public' ) ));
 
+    //listeners for SocketIO global object
     me.io.on( 'connection', me.onConnection.bind(me) );
+
+    //listeners to common EventManager
+    me.on( 'socket:user.disconnect', me.onDisconnect.bind(me) );
 };
 
 
 Server.prototype.start = function (port) {
     var me = this;
 
-    me.app.listen(port);
-    //me.step.start();
+    me.httpServer.listen(port);
+    me.step.start();
 };
 
 Server.prototype.onConnection = function (socket) {
     var me = this,
         userId = "u" + u.getId(),
-        clientSocket = Factory.create("ClientSocket", {
-            userId : userId,
-            socket : socket
-        }),
+        clientSocket,
         newPlayer;
-
-    console.log("Socket connected : ", socket);
 
     console.log("Player connected: ", userId);
 
-    newPlayer = Factory.create("Player", {
+    clientSocket = Factory.createInstance( "ClientSocket", {
+        userId : userId,
+        socket : socket
+    });
+
+    newPlayer = Factory.createInstance( "Player", {
         userId : userId,
         clientSocket : clientSocket
     });
 
     me.users[userId] = newPlayer;
+
+
+    console.log("Register after user Connected", global.Singletones.Register);
+
 };
 
+Server.prototype.onDisconnect = function (userId) {
+    var me = this,
+        player = me.users[userId];
+
+    player.destroy();
+
+    delete me.users[userId];
+
+    console.log("Register after user Disconnect", global.Singletones.Register);
+};
 
 module.exports = Server;

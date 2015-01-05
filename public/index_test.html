@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+
+
+<script src="vendor/socket.io/socket.io.js" type="application/javascript"></script>
+<script>
+
+    var charId;
+    var socket = io.connect('http://127.0.0.1:8124', { transports: [ 'websocket' ] });
+    socket.on( 'connect', function () {
+        console.log('CONNECTED!', arguments);
+        socket.emit('client:command', {
+            name : "init",
+            params : {
+                name : "NAGIBATOR"
+            }
+        });
+    });
+
+    socket.on( 'server:update', function (update) {
+        var id;
+
+        if(update[charId]){
+            console.log("character moved to ( %s ; %s )", update[charId].pos.x, update[charId].pos.y );
+        }
+        console.log("UPDATE ARRIVED :", update);
+
+        for(id in update){
+            if(update[id].created){
+                charId = id;
+                socket.emit('client:command', {
+                    name : "move",
+                    params : {
+                        x : 250,
+                        y : 50
+                    }
+                })
+            }
+        }
+        setTimeout(function () {
+            socket.emit("client:updateProceed");
+        }, 3000);
+    });
+    
+    
+</script>
+<body>
+
+</body>
+</html>

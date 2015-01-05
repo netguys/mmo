@@ -24,7 +24,8 @@ Factory.prototype.init = function () {
 Factory.prototype.createClassesDesc = function () {
     var me = this,
         className,
-        pathToFile;
+        pathToFile,
+        desc;
 
     me.classes = {};
 
@@ -32,7 +33,14 @@ Factory.prototype.createClassesDesc = function () {
         //gets function description.
         pathToFile = PATH.resolve( PATH.resolve( PATH.dirname( require.main.filename ), me.classMap[ className ] ) );
 
-        me.classes[className] = require(pathToFile);
+        desc = require(pathToFile);
+        if(typeof desc !== "function"){
+            console.error("Class description is not a function. ClassName=%s", className);
+        }
+        else{
+            me.classes[className] = desc;
+        }
+
     }
 };
 

@@ -26,7 +26,7 @@ Register.prototype.createEntity = function (className, params) {
     return obj;
 };
 
-Register.prototype.destroy = function () {
+Register.prototype.destroyEntity = function () {
     var me = this,
         arg0 = arguments[0];
 

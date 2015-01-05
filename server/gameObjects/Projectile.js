@@ -38,6 +38,8 @@ Projectile.prototype.init = function (params) {
 
     me.pos = params.pos;
 
+    me.className = "Projectile";
+
     me.bBox = new BoundingBox();
     me.bBox.init(me, params.hw, params.hh);
 };

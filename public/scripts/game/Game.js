@@ -19,7 +19,7 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
 
 
         //TODO: make a server
-        socket = io( "http://10.96.10.64:8090", { transports: ["websocket"] } );
+        socket = io( "http://127.0.0.1:8124", { transports: ["websocket"] } );
 
         // Maximise the canvas
         // HACK for uncorrected windows
@@ -55,11 +55,17 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         // Window resize
         window.addEventListener("resize", this.onResize, false);
 
+
+        //old declarations
+        //socket.on("connect", onSocketConnected);
+        //socket.on("disconnect", onSocketDisconnect);
+        //socket.on("new player", onNewPlayer);
+        //socket.on("move player", onMovePlayer);
+        //socket.on("remove player", onRemovePlayer);
+
         socket.on("connect", onSocketConnected);
-        socket.on("disconnect", onSocketDisconnect);
-        socket.on("new player", onNewPlayer);
-        socket.on("move player", onMovePlayer);
-        socket.on("remove player", onRemovePlayer);
+        socket.on("server:update", onServerUpdate);
+
     };
 
     function playerById(id) {
@@ -72,10 +78,55 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         return false;
     };
 
+    function onServerUpdate(){
+
+    }
+
     function onSocketConnected() {
-        console.log("Connected to socket server");
-        socket.emit("new player", {x: localPlayer.getX(), y: localPlayer.getY()});
+        console.log("Connected to server.");
+
+        socket.emit( 'client:command', {
+            name : "init",
+            params : {
+                name : "NAGIBATOR_" + Math.round(Math.random()*10000)
+            }
+        });
+
     };
+
+
+    function onServerUpdate(update){
+        var id;
+
+        console.log( 'Update from server: ', update);
+        for(id in update){
+            processSingleEntityUpdate(id, update[id]);
+        }
+
+        //make a sync with delay of 1 sec. Emulates latency.
+        setTimeout(function(){
+            socket.emit("client:updateProceed");
+        }, 1000);
+
+    }
+
+    function processSingleEntityUpdate(id, params){
+        var className = params.className;
+
+        if(className === "Character"){
+            if( params.created ){
+
+                params.created.id = id; //hack to match prev functionality.
+                onNewPlayer(params.created);
+            }
+
+            if( params.position ){
+                params.position.id = id;
+
+                onMovePlayer(params.position);
+            }
+        }
+    }
 
     function onSocketDisconnect() {
         console.log("Disconnected from socket server");
@@ -119,12 +170,26 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         if (localPlayer) {
             keys.onKeyDown(e);
         }
+
+        if (localPlayer.update(keys)) {
+            socket.emit("client:command", {
+                name : "move",
+                params : {
+                    x: localPlayer.getX(),
+                    y: localPlayer.getY()
+               }
+           });
+        }
+
     };
 
     // Keyboard key up
     Game.prototype.onKeyup = function (e) {
         if (localPlayer) {
             keys.onKeyUp(e);
+        }
+        if (localPlayer.update(keys)) {
+            socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
         }
     };
 
@@ -152,7 +217,7 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
     Game.prototype.update = function () {
 
         if (localPlayer.update(keys)) {
-            socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
+            //socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
         }
 //        localPlayer.update(keys);
     };

@@ -27,6 +27,8 @@ Character.constructor = function () {
 Character.prototype.init = function (params) {
     var me = this;
     Character.super_.prototype.init.apply(me, arguments);
+
+    me.className = "Character";
     me.mv = { x : 0, y : 0 }; //normalized vector
 
     //TODO: utils.applyConfig method should be provided
@@ -37,6 +39,7 @@ Character.prototype.init = function (params) {
 
     me.pathLeft = 0;
 
+    me.charName = params.charName;
 
     me.bBox = new BoundingBox();
     me.bBox.init(me, CHARACTER_CONFIG.hw, CHARACTER_CONFIG.hh);

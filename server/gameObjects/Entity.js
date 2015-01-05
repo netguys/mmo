@@ -18,6 +18,8 @@ Entity.prototype.init = function(params){
     me.id = u.getId();
     me.localTime = Date.now();
 
+    me.className = "Entity";
+
     me.emit("entity:created", me, params);
 };
 
