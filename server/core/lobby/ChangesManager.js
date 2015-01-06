@@ -34,8 +34,10 @@ ChangesManager.prototype.init = function (params) {
  * @param type
  * @param values
  */
-ChangesManager.prototype.appendChange = function (id, className, type, values) {
+ChangesManager.prototype.appendChange = function (entity, type, values) {
     var me = this,
+        id = entity.id,
+        className = entity.getClassName(),
         changes = me.changes;
 
     if(!changes[id]){
@@ -57,12 +59,15 @@ ChangesManager.prototype.appendChange = function (id, className, type, values) {
     }
 
     changes[id][type] = values;
-    changes[id][type].className = className;
 
     if(type === ENTITY_DESTROYED){
         changes[id] = {
             destroyed : true
         };
+    }
+
+    if(type === ENTITY_CREATED){
+        changes[id][type].className = className;
     }
 
 };

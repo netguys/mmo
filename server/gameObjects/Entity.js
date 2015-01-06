@@ -11,14 +11,16 @@ function Entity(){};
 util.inherits(Entity, Subscriber);
 
 
+Entity.prototype.getClassName = function () {
+    return 'Entity';
+};
+
 Entity.prototype.init = function(params){
     var me = this;
     Entity.super_.prototype.init.apply(me, arguments);
 
     me.id = u.getId();
     me.localTime = Date.now();
-
-    me.className = "Entity";
 
     me.emit("entity:created", me, params);
 };
@@ -41,6 +43,17 @@ Entity.prototype.onStepPulse = function (globalTime) {
 
     me.localTime = globalTime;
 };
+
+
+//TODO: remove after implemented methods at below.
+Entity.prototype.createInitUpdateParams = function () {
+    return {};
+};
+
+
+//TODO: implement.
+Entity.prototype.getCreationUpdate = function () {};
+Entity.prototype.getUpdate = function () {};
 
 
 Entity.prototype.destroy = function () {

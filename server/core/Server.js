@@ -67,10 +67,6 @@ Server.prototype.onConnection = function (socket) {
     });
 
     me.users[userId] = newPlayer;
-
-
-    console.log("Register after user Connected", global.Singletones.Register);
-
 };
 
 Server.prototype.onDisconnect = function (userId) {
@@ -80,8 +76,6 @@ Server.prototype.onDisconnect = function (userId) {
     player.destroy();
 
     delete me.users[userId];
-
-    console.log("Register after user Disconnect", global.Singletones.Register);
 };
 
 module.exports = Server;

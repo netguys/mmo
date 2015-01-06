@@ -35,9 +35,9 @@ Player.prototype.init = function (params) {
 Player.prototype.gameStart = function () {
     var me = this,
         //randomPos = { x : 50 Math.round( 200 * Math.random() ) , y : Math.round( 200 * Math.random() ) };
-        randomPos = { x : 50 , y : 50 };
+        randomPos = { x : 150 , y : 150 };
 
-    me.character = Register.createEntity("Character", {
+    me.character = Register.createEntity( 'Character', {
         charName : me.name,
         position : randomPos
     });
@@ -50,11 +50,11 @@ Player.prototype.setupListeners = function () {
     me.on( 'entity:created', me.onEntityInitialized.bind(me) );
     me.on( 'entity:destroyed', me.onEntityDestroyed.bind(me) );
 
-    me.on( "entity:moveInitiated" , me.onEntityMoved.bind(me) );
+    me.on( 'entity:moveInitiated' , me.onEntityMoved.bind(me) );
 
 
     //attempt to flush possible changes on the end of update.
-    me.on( "step:pulseEnd", me.flushChanges.bind(me) );
+    me.on( 'step:pulseEnd', me.flushChanges.bind(me) );
 
 
     //listening to socket events. (Client Actions)
@@ -78,12 +78,14 @@ Player.prototype.setupCommandHandlers = function () {
 
 
 Player.prototype.commandInit = function ( params ) {
-    var me = this;
+    var me = this,
+        entitiesList = Register.getEntitiesList();
 
     me.name = params.name;
 
     me.gameStart();
-    me.readyForUpdate = true;
+    me.pushInitUpdateChanges(entitiesList);
+    me.clientSocket.send( 'server:initUpdate', me.changes.popChanges() );
 };
 
 Player.prototype.commandMove = function ( params ) {
@@ -101,15 +103,30 @@ Player.prototype.commandShoot = function ( params ) {
  *
  */
 Player.prototype.onEntityInitialized = function (entity, params) {
-    this.changes.appendChange( entity.id, entity.className, "created", params );
+    this.changes.appendChange( entity, "created", params );
 };
 
 Player.prototype.onEntityDestroyed = function (entity) {
-    this.changes.appendChange( entity.id, entity.className, "destroyed" );
+    this.changes.appendChange( entity, "destroyed" );
 };
 
 Player.prototype.onEntityMoved = function (entity, newPos) {
-    this.changes.appendChange( entity.id, entity.className, "pos", newPos )
+    this.changes.appendChange( entity, "position", newPos )
+};
+
+//TODO: make Entity.makeUpdate method which will create an object containing all the info of entity's current state.
+//pushes changes to a ChangesManager of current player, which will be further sent as initUpdate
+Player.prototype.pushInitUpdateChanges = function (list) {
+    var me = this,
+        entity,
+        createParams,
+        i;
+
+    for( i=0; i < list.length; i++){
+        entity = list[i];
+        createParams = entity.createInitUpdateParams();
+        me.changes.appendChange( entity, "created",  createParams);
+    }
 };
 
 

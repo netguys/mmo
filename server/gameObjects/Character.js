@@ -23,12 +23,15 @@ Character.constructor = function () {
     Character.super_.constructor.apply(this, arguments);
 };
 
+Character.prototype.getClassName = function () {
+    return 'Character';
+};
 
 Character.prototype.init = function (params) {
     var me = this;
     Character.super_.prototype.init.apply(me, arguments);
 
-    me.className = "Character";
+
     me.mv = { x : 0, y : 0 }; //normalized vector
 
     //TODO: utils.applyConfig method should be provided
@@ -44,6 +47,16 @@ Character.prototype.init = function (params) {
     me.bBox = new BoundingBox();
     me.bBox.init(me, CHARACTER_CONFIG.hw, CHARACTER_CONFIG.hh);
 };
+
+Character.prototype.createInitUpdateParams = function () {
+    var me = this;
+
+    return {
+        position : me.pos,
+        charName : me.charName
+    };
+};
+
 
 
 Character.prototype.moveTo = function (x, y) {
@@ -63,7 +76,7 @@ Character.prototype.shoot = function (x, y) {
 
     return Register.createEntity( "Projectile", {
         direction : u.normalize( { x : x - me.pos.x, y : y - me.pos.y} ),
-        velocity : 1,
+        velocity : 700,
         pos : {
             x : me.pos.x,
             y : me.pos.y
@@ -87,6 +100,9 @@ Character.prototype.update = function (dt) {
 
         me.pathLeft -= dS;
 
+        if( me.pathLeft < 0 ){
+            me.pos = me.dst;
+        }
                                             //new cooridnates
         me.emit("entity:moveInitiated", me, { x : me.pos.x + 0, y : me.pos.y + 0 });
     }

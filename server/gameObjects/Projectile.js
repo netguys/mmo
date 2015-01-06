@@ -20,6 +20,10 @@ Projectile.constructor = function () {
     Projectile.super_.constructor.apply(this, arguments);
 };
 
+Projectile.prototype.getClassName = function () {
+    return 'Projectile';
+};
+
 Projectile.prototype.setupListeners = function () {
     var me = this;
     Projectile.super_.prototype.setupListeners.apply(me, arguments);
@@ -38,22 +42,31 @@ Projectile.prototype.init = function (params) {
 
     me.pos = params.pos;
 
-    me.className = "Projectile";
-
     me.bBox = new BoundingBox();
     me.bBox.init(me, params.hw, params.hh);
 };
+
+Projectile.prototype.createInitUpdateParams = function () {
+    var me = this;
+
+    return {
+        position : me.pos
+    };
+};
+
 
 
 Projectile.prototype.update = function (dt) {
     var me = this,
         dS = me.v * dt/1000;
 
-    //setup artificial boundaries for Projectile to not be able to move if its not in 0,0 500,500 rectangle.
+    //setup artificial boundaries for Projectile to be alive only in [ (0,0) (2000,2000) ] rectangle.
     if( me.pos.x < 0
         || me.pos.y < 0
-        || me.pos.x >= 500
-        || me.pos.y >= 500 ){
+        || me.pos.x >= 2000
+        || me.pos.y >= 2000 ){
+
+        me.destroy();
         return;
     }
 

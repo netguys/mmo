@@ -22,6 +22,9 @@ require.config({
         Game: 'game/Game',
         Keys: 'game/Keys',
         Player: 'game/Player',
+        Projectile: 'game/Projectile',
+        Character: 'game/Character',
+        Factory: 'game/Factory',
 
         domready: '../bower_components/requirejs-domready/domReady'
     }

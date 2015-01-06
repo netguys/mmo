@@ -5,16 +5,26 @@
  */
 var util = require('util'),
     path = require('path'),
-    Factory = require( path.resolve( EXE_PATH, "./server/core/Factory" ) );
+    Factory = require( path.resolve( EXE_PATH, "./server/core/Factory" ) ),
+    Subscriber = require( path.resolve( EXE_PATH, "./server/core/Subscriber" ) );
 
 
 function Register(){}
+util.inherits(Register, Subscriber)
 
 
 Register.prototype.init = function () {
     var me = this;
+    Register.super_.prototype.init.apply(me, arguments);
 
     me.pool = {};
+};
+
+Register.prototype.setupListeners = function () {
+    var me = this;
+    Register.super_.prototype.setupListeners.apply(me, arguments);
+
+    me.on( 'entity:destroyed', me.onEntitySelfDestruction.bind(me) );
 };
 
 Register.prototype.createEntity = function (className, params) {
@@ -26,6 +36,8 @@ Register.prototype.createEntity = function (className, params) {
     return obj;
 };
 
+
+//TODO: Remove.
 Register.prototype.destroyEntity = function () {
     var me = this,
         arg0 = arguments[0];
@@ -35,9 +47,23 @@ Register.prototype.destroyEntity = function () {
     }
 
     arg0.destroy();
-    delete me.pool[arg0.id];
 };
 
+Register.prototype.onEntitySelfDestruction = function (entity) {
+    delete this.pool[entity.id];
+};
+
+
+Register.prototype.getEntitiesList = function () {
+    var me = this,
+        list = [];
+
+    for(id in me.pool){
+        list.push(me.pool[id]);
+    }
+
+    return list;
+};
 
 
 

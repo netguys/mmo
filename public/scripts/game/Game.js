@@ -1,11 +1,16 @@
-define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
+define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Keys, Factory) {
     /**************************************************
      ** GAME VARIABLES
      **************************************************/
-    var canvas,			// Canvas DOM element
-        ctx,			// Canvas rendering context
+    var screenCanvas,			// Canvas DOM element
+        screenCtx,
+
+        bgCanvas,
+        bgCtx,			// Canvas rendering context
+
         keys,			// Keyboard input
-        localPlayer,
+
+        entities = {},
         socket;	// Local player
 
     function Game() {}
@@ -14,17 +19,22 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
      **************************************************/
     Game.prototype.init = function () {
         // Declare the canvas and rendering context
-        canvas = document.getElementById("gameCanvas");
-        ctx = canvas.getContext("2d");
-
-
-        //TODO: make a server
-        socket = io( "http://127.0.0.1:8124", { transports: ["websocket"] } );
+        screenCanvas = document.getElementById("gameCanvas");
+        screenCtx = screenCanvas.getContext("2d");
 
         // Maximise the canvas
         // HACK for uncorrected windows
-        canvas.width = window.innerWidth - 20;
-        canvas.height = window.innerHeight - 20;
+        screenCanvas.width = window.innerWidth - 20;
+        screenCanvas.height = window.innerHeight - 20;
+
+        bgCanvas = document.createElement("canvas");
+        bgCanvas.width = screenCanvas.width;
+        bgCanvas.height = screenCanvas.height;
+
+        bgCtx = bgCanvas.getContext("2d");
+
+        //TODO: make a server
+        socket = io( "http://192.168.1.147:8124", { transports: ["websocket"] } );
 
         // Initialise keyboard controls
         keys = new Keys();
@@ -32,12 +42,6 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         // Calculate a random start position for the local player
         // The minus 5 (half a player size) stops the player being
         // placed right on the egde of the screen
-        var startX = Math.round(Math.random()*(canvas.width-5)),
-            startY = Math.round(Math.random()*(canvas.height-5));
-
-        // Initialise the local player
-        localPlayer = new Player(startX, startY);
-
 
         remotePlayers = [];
         // Start listening for events
@@ -49,38 +53,31 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
      **************************************************/
     Game.prototype.setEventHandlers = function() {
         // Keyboard
-        window.addEventListener("keydown", this.onKeydown, false);
-        window.addEventListener("keyup", this.onKeyup, false);
+        //window.addEventListener("keydown", this.onKeydown, false);
+        //window.addEventListener("keyup", this.onKeyup, false);
+
+        window.addEventListener( 'mousedown', this.onMouseDown, false);
+
 
         // Window resize
-        window.addEventListener("resize", this.onResize, false);
-
-
-        //old declarations
-        //socket.on("connect", onSocketConnected);
-        //socket.on("disconnect", onSocketDisconnect);
-        //socket.on("new player", onNewPlayer);
-        //socket.on("move player", onMovePlayer);
-        //socket.on("remove player", onRemovePlayer);
+        window.addEventListener( 'resize', this.onResize, false);
 
         socket.on("connect", onSocketConnected);
+        socket.on('server:initUpdate', onServerInitUpdate);
         socket.on("server:update", onServerUpdate);
 
     };
 
     function playerById(id) {
         var i;
-        for (i = 0; i < players.length; i++) {
-            if (players[i].id == id)
-                return players[i];
+        for (i = 0; i < remotePlayers.length; i++) {
+            if (remotePlayers[i].id == id)
+                return remotePlayers[i];
         };
 
         return false;
     };
 
-    function onServerUpdate(){
-
-    }
 
     function onSocketConnected() {
         console.log("Connected to server.");
@@ -94,110 +91,97 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
 
     };
 
-
-    function onServerUpdate(update){
+    function onServerInitUpdate( update ){
         var id;
 
-        console.log( 'Update from server: ', update);
         for(id in update){
             processSingleEntityUpdate(id, update[id]);
         }
 
-        //make a sync with delay of 1 sec. Emulates latency.
-        setTimeout(function(){
-            socket.emit("client:updateProceed");
-        }, 1000);
+        socket.emit("client:updateProceed");
 
-    }
+
+    };
+
+    function onServerUpdate(update){
+        var id;
+
+        for(id in update){
+            processSingleEntityUpdate(id, update[id]);
+        }
+
+        socket.emit("client:updateProceed");
+
+    };
+
 
     function processSingleEntityUpdate(id, params){
-        var className = params.className;
+        var entity = entities[id];
 
-        if(className === "Character"){
-            if( params.created ){
+        //if destroy flag arrived from server, call destruction of client entity as well.
+        if(entity && params.destroyed){
+            entity.destroy();
+            delete entities[id];
+            return;
+        }
 
-                params.created.id = id; //hack to match prev functionality.
-                onNewPlayer(params.created);
-            }
+        //creation of entity
+        if(!entity){
+            if(params.created){
+                params.created.id = id;
+                entities[id] = entity = Factory.createInstance(params.created);
 
-            if( params.position ){
-                params.position.id = id;
-
-                onMovePlayer(params.position);
+                delete params.created; //no need for this flag any more
             }
         }
+
+        //if any other updates are present.
+        entity.serverUpdate( params );
     }
 
     function onSocketDisconnect() {
         console.log("Disconnected from socket server");
     };
 
-    function onNewPlayer(data) {
-        console.log("New player connected: "+data.id);
-        var newPlayer = new Player(data.x, data.y);
-        newPlayer.id = data.id;
-        remotePlayers.push(newPlayer);
-    };
+    
+    Game.prototype.onMouseDown = function (e) {
+        e.preventDefault();
 
-    function onMovePlayer(data) {
-        var movePlayer = playerById(data.id);
-
-        // Player not found
-        if (!movePlayer) {
-            console.log("Player not found: "+data.id);
+        //left mouse button click
+        if(e.button === 0){
+            socket.emit("client:command", {
+                name : "shoot",
+                params : {
+                    x: e.offsetX,
+                    y: e.offsetY
+                }
+            });
             return;
         }
 
-        // Update player position
-        movePlayer.setX(data.x);
-        movePlayer.setY(data.y);
-    };
-
-    function onRemovePlayer(data) {
-        var removePlayer = playerById(this.id);
-
-        if (!removePlayer) {
-            util.log("Player not found: "+this.id);
-            return;
-        }
-
-        players.splice(players.indexOf(removePlayer), 1);
-        this.broadcast.emit("remove player", {id: this.id});
-    };
-
-    // Keyboard key down
-    Game.prototype.onKeydown = function (e) {
-        if (localPlayer) {
-            keys.onKeyDown(e);
-        }
-
-        if (localPlayer.update(keys)) {
+        //right mouse button click
+        if(e.button === 2){
             socket.emit("client:command", {
                 name : "move",
                 params : {
-                    x: localPlayer.getX(),
-                    y: localPlayer.getY()
-               }
-           });
+                    x: e.offsetX,
+                    y: e.offsetY
+                }
+            });
+            return;
         }
 
-    };
-
-    // Keyboard key up
-    Game.prototype.onKeyup = function (e) {
-        if (localPlayer) {
-            keys.onKeyUp(e);
-        }
-        if (localPlayer.update(keys)) {
-            socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
-        }
+        return false;
     };
 
     // Browser window resize
     Game.prototype.onResize = function (e) {
         // Maximise the canvas
-        canvas.width = window.innerWidth - 1000;
-        canvas.height = window.innerHeight - 1000;
+        screenCanvas.width = window.innerWidth - 1000;
+        screenCanvas.height = window.innerHeight - 1000;
+
+        bgCanvas.width = window.innerWidth - 1000;
+        bgCanvas.height = window.innerHeight - 1000;
     };
 
     /**************************************************
@@ -208,7 +192,7 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
         this.draw();
 
         // Request a new animation frame using Paul Irish's shim
-        gameLoop(this.animate.bind(this));
+        gameLoop( this.animate.bind(this) );
     };
 
     /**************************************************
@@ -216,9 +200,9 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
      **************************************************/
     Game.prototype.update = function () {
 
-        if (localPlayer.update(keys)) {
-            //socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
-        }
+        //if (localPlayer.update(keys)) {
+        //    //socket.emit("move player", {x: localPlayer.getX(), y: localPlayer.getY()});
+        //}
 //        localPlayer.update(keys);
     };
 
@@ -226,16 +210,15 @@ define(['gameLoop', 'Player', 'Keys'], function (gameLoop, Player, Keys) {
      ** GAME DRAW
      **************************************************/
     Game.prototype.draw = function () {
-        // Wipe the canvas clean
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        bgCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
+        screenCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
 
-        var i;
-        for (i = 0; i < remotePlayers.length; i++) {
-            remotePlayers[i].draw(ctx);
+        var id;
+        for(id in entities){
+            entities[id].draw(bgCtx);
         }
 
-        // Draw the local player
-        localPlayer.draw(ctx);
+        screenCtx.drawImage(bgCanvas, 0, 0);
     };
 
     return Game;

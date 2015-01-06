@@ -6,6 +6,7 @@ define(function() {
 
     function Player (startX, startY) {
 
+        console.error("Player constuctor call with ", startX, startY);
         this.x = startX;
         this.y = startY;
         this.moveAmount = 2;
