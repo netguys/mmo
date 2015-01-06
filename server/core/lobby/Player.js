@@ -21,6 +21,8 @@ Player.prototype.init = function (params) {
         player : me
     });
 
+    me.inGame = false;
+
 
 
     me.commands = {};
@@ -86,6 +88,7 @@ Player.prototype.commandInit = function ( params ) {
     me.gameStart();
     me.pushInitUpdateChanges(entitiesList);
     me.clientSocket.send( 'server:initUpdate', me.changes.popChanges() );
+    me.inGame = true;
 };
 
 Player.prototype.commandMove = function ( params ) {
@@ -107,6 +110,9 @@ Player.prototype.onEntityInitialized = function (entity, params) {
 };
 
 Player.prototype.onEntityDestroyed = function (entity) {
+    if(!this.inGame){
+        return;
+    }
     this.changes.appendChange( entity, "destroyed" );
 };
 
