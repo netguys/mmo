@@ -2,9 +2,9 @@
  * Created by alexey.moroz on 18.12.2014.
  */
 var util = require('util'),
-    path = require('path'),
-    u = require( path.resolve( __dirname, '../utils') ),
-    Subscriber = require( path.resolve( __dirname, '../core/Subscriber' ) );
+    u = getCustomUtils(),
+
+    Subscriber = importFile('../core/Subscriber' );
 
 
 function Entity(){};
@@ -32,6 +32,12 @@ Entity.prototype.setupListeners = function () {
     me.on('step:pulse', me.onStepPulse.bind(me));
 };
 
+Entity.prototype.getPosition = function () {
+    return {
+        x : this.pos.x+0,
+        y : this.pos.y+0
+    }
+};
 
 Entity.prototype.update = function(dt){};
 
@@ -60,7 +66,19 @@ Entity.prototype.destroy = function () {
     var me = this;
 
     me.removeAllLocalListeners();
+    me.bShape.destroy();
+    delete me.bShape;
     me.emit("entity:destroyed", me);
 };
+
+
+Entity.prototype.createBoundingShape = function (className, params) {
+    this.bShape = Singletones.Factory.createInstance( className, params);
+};
+
+Entity.prototype.getBoundingShape = function () {
+    return this.bShape;
+};
+
 
 module.exports = Entity;

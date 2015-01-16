@@ -8,8 +8,9 @@ var util = require('util'),
     u = getCustomUtils(),
 
 
-    Entity = require( PATH.resolve( __dirname, '../gameObjects/Entity' ) ),
-    BoundingBox = require( PATH.resolve( __dirname, '../core/collisions/BoundingShapes' ) ).BoundingBox;
+    Entity = absRequire( './server/core/gameObjects/Entity' ),
+    BoundingBox = absRequire( './server/core/collisions/BoundingCircle' ),
+    Character = absRequire( './server/core/gameObjects/Character' );
 
 
 
@@ -28,8 +29,6 @@ Projectile.prototype.setupListeners = function () {
     var me = this;
     Projectile.super_.prototype.setupListeners.apply(me, arguments);
 
-    //TODO: collision detection in somehow more accurate manner.
-    //me.on('entity:moveInitiated', me.onEntityMoved);
 };
 
 
@@ -73,31 +72,21 @@ Projectile.prototype.update = function (dt) {
     me.pos.x += me.mv.x * dS;
     me.pos.y += me.mv.y * dS;
                                             //new cooridnates
-    me.emit("entity:moveInitiated", me, { x : me.pos.x + 0, y : me.pos.y + 0 });
+    me.emit( "entity:moveInitiated", me, me.getPosition() );
 };
 
-
-Projectile.prototype.onEntityMoved = function (entity, newPosition) {
-    var me = this,
-        correctionVector;
-
-    //can't collide with itself
-    if(me === entity){
-        return;
-    }
-
-    correctionVector = entity.shape.checkCollision(me.shape);
-    if(u.vecLength(correctionVector) <= 0){
-        return;
-    }
-
-    entity.onCollisionDetected(me, correctionVector, true);
-    me.onCollisionDetected(entity, u.mulVecScalar(correctionVector, -1), false); //multiply the correction vector by -1 to reverse direction.
-
-};
-
+/**
+ * @description Handler for a collision occurence.
+ *
+ * @param entity Entity collided with.
+ * @param cv Vector2d Correction vector to be applied to this Entity to avoid collision.
+ * @param initiator Who initiated the collisionCheck. Provides prioritization.
+ */
 Projectile.prototype.onCollisionDetected = function (entity, cv, initiator) {
 
+    if(entity instanceof Character && initiator){
+        this.destroy();
+    }
 };
 
 module.exports = Projectile;

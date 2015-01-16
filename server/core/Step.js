@@ -33,7 +33,11 @@ Step.prototype.pulse = function () {
     var me = this,
         currentTime = Date.now();
 
+
     me.emit( 'step:pulse', currentTime );
+
+    //handled by a Collider.
+    me.emit( 'step:collisionUpdate' );
 
     me.emit( 'step:pulseEnd' ); //will be handled only by Player class objects.
     if(me.stopped){
@@ -41,6 +45,7 @@ Step.prototype.pulse = function () {
     }
     //setImmediate sets a function to be executed on a next iteration of an EventLoop,
     //setting it in queue with other I\O or timeout callbacks in order of acceptance.
+    //kind of analog for the browser "RequestAnimationFrame"
     setImmediate(function () {
         me.pulse();
     });

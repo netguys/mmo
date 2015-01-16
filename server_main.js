@@ -15,9 +15,32 @@ global.getCustomUtils = function() {
     return require( PATH.resolve(EXE_PATH, './server/utils') );
 };
 
+global.absRequire = function (pathToFile) {
+    return PATH.resolve( EXE_PATH, pathToFile )
+};
+
+global.createSingletoneExports = function (desc) {
+    return (function () {
+
+        if(!global.Singletones){
+            global.Singletones = {};
+        }
+
+        if(global.Singletones[ desc.name ] ){
+            return global.Singletones[ desc.name ];
+        }
+
+        global.Singletones[ desc.name ] = new desc();
+        global.Singletones[ desc.name ].init();
+
+        return global.Singletones[ desc.name ];
+    })();
+};
+
 //creation of singletones section
-var Factory = require( PATH.resolve( EXE_PATH, "./server/core/Factory" ) ),
-    Register = require( PATH.resolve( EXE_PATH, "./server/core/Register" ) );
+var Factory = absRequire( "./server/core/Factory" ),
+    Register = absRequire( "./server/core/Register" ),
+    Collider = absRequire( "./server/core/collisions/Collider");
 
 //Needed to be called after init of all the Singletones, for ALL the classes to obtain a ref on them.
 Factory.createClassesDesc();

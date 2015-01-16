@@ -10,10 +10,9 @@ var util = require('util'),
 
     Register = Singletones.Register,
 
-    Entity = require( path.resolve( __dirname, '../gameObjects/Entity' ) ),
-    BoundingBox = require( path.resolve( __dirname, '../core/collisions/BoundingShapes' ) ).BoundingBox,
+    Entity = absRequire('./server/core/gameObjects/Entity' ) ,
 
-    CHARACTER_CONFIG = require( path.resolve( EXE_PATH, './server/configs/character_default.json' ) )
+    CHARACTER_CONFIG = absRequire( './server/configs/character_default.json' );
 
 
 function Character(){};
@@ -44,8 +43,7 @@ Character.prototype.init = function (params) {
 
     me.charName = params.charName;
 
-    me.bBox = new BoundingBox();
-    me.bBox.init(me, CHARACTER_CONFIG.hw, CHARACTER_CONFIG.hh);
+    me.createBoundingShape("BoundingCircle");
 };
 
 Character.prototype.createInitUpdateParams = function () {
@@ -104,11 +102,18 @@ Character.prototype.update = function (dt) {
             me.pos = me.dst;
         }
                                             //new cooridnates
-        me.emit("entity:moveInitiated", me, { x : me.pos.x + 0, y : me.pos.y + 0 });
+        me.emit("entity:moveInitiated", me, me.getPosition() );
     }
 
 
 };
 
+
+Character.prototype.onCollisionDetected = function (entity, cv, initiator) {
+
+    if( entity.getClassName() === "Projectile" ){
+        this.decHp();
+    }
+};
 
 module.exports = Character;

@@ -61,17 +61,4 @@ Factory.prototype.createInstance = function (className, params) {
 
 
 //make it a singletone, using a Global variable.
-module.exports = (function () {
-
-    if(!global.Singletones){
-        global.Singletones = {};
-    }
-
-    if(global.Singletones.Factory){
-        return global.Singletones.Factory;
-    }
-    global.Singletones.Factory = new Factory();
-    global.Singletones.Factory.init();
-
-    return global.Singletones.Factory;
-})();
+module.exports = createSingletoneExports(Factory);

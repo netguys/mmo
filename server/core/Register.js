@@ -68,21 +68,7 @@ Register.prototype.getEntitiesList = function () {
 
 
 //make it a singletone, using a Global variable.
-module.exports = (function () {
-
-    if(!global.Singletones){
-        global.Singletones = {};
-    }
-
-    if(global.Singletones.Register){
-        return global.Singletones.Register;
-    }
-
-    global.Singletones.Register = new Register();
-    global.Singletones.Register.init();
-
-    return global.Singletones.Register;
-})();
+module.exports = createSingletoneExports(Register);
 
 
 
