@@ -17,14 +17,19 @@ define(function() {
         this.x = params.position.x;
         this.y = params.position.y;
         this.name = params.charName;
+        this.hits = params.hits;
 
     }
 
     Character.prototype.serverUpdate = function(params) {
         var positionUpdate = params.position;
+
         if(positionUpdate){
             this.x = positionUpdate.x;
             this.y = positionUpdate.y;
+        }
+        if(params.hits){
+            this.hits = params.hits;
         }
     };
 
@@ -32,9 +37,10 @@ define(function() {
         ctx.save();
         ctx.fillRect(this.x - 5, this.y - 5, 10, 10);
         ctx.fillStyle = "#00F";
-        ctx.font = "15pt Arial";
+        ctx.font = "10pt Arial";
         ctx.textAlign = "center";
-        ctx.fillText(this.name, this.x, this.y - 25);
+        ctx.fillText(this.name, this.x, this.y - 20);
+        ctx.fillText(this.hits, this.x + 10, this.y)
         ctx.restore();
     };
 

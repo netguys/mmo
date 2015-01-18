@@ -4,7 +4,7 @@
 var util = require('util'),
     u = getCustomUtils(),
 
-    Subscriber = importFile('../core/Subscriber' );
+    Subscriber = absRequire('./server/core/Subscriber' );
 
 
 function Entity(){};
@@ -22,7 +22,12 @@ Entity.prototype.init = function(params){
     me.id = u.getId();
     me.localTime = Date.now();
 
-    me.emit("entity:created", me, params);
+    me.notifyCreation(params);
+    //me.emit("entity:created", me, params);
+};
+
+Entity.prototype.notifyCreation = function (params) {
+    this.emit("entity:created", this, params);
 };
 
 Entity.prototype.setupListeners = function () {
@@ -67,18 +72,37 @@ Entity.prototype.destroy = function () {
 
     me.removeAllLocalListeners();
     me.bShape.destroy();
-    delete me.bShape;
+    //delete me.bShape;
+
+    console.log("entity:destroyed", this.id);
     me.emit("entity:destroyed", me);
 };
 
 
 Entity.prototype.createBoundingShape = function (className, params) {
-    this.bShape = Singletones.Factory.createInstance( className, params);
+    var me = this;
+
+    if( !params ){
+        params = {};
+    }
+    params.master = me;
+    me.bShape = Singletones.Factory.createInstance( className, params );
 };
 
 Entity.prototype.getBoundingShape = function () {
     return this.bShape;
 };
+
+
+/**
+ * @description Handler for a collision occurence.
+ *
+ * @param entity Entity collided with.
+ * @param cv Vector2d Correction vector to be applied to this Entity to avoid collision.
+ * @param initiator Who initiated the collisionCheck. Provides prioritization.
+ */
+Entity.prototype.onCollisionDetected = function (entity, cv, initiator) {};
+
 
 
 module.exports = Entity;

@@ -10,7 +10,7 @@ var util = require('util'),
 
     Register = Singletones.Register,
 
-    Entity = absRequire('./server/core/gameObjects/Entity' ) ,
+    Entity = absRequire('./server/gameObjects/Entity' ) ,
 
     CHARACTER_CONFIG = absRequire( './server/configs/character_default.json' );
 
@@ -39,11 +39,18 @@ Character.prototype.init = function (params) {
     me.pos = params.position;
     me.dst = me.pos; // destination point
 
+    me.hits = 0;
+    params.hits = me.hits;
+
     me.pathLeft = 0;
 
     me.charName = params.charName;
 
-    me.createBoundingShape("BoundingCircle");
+    me.createBoundingShape("BoundingCircle", {
+        radius : 5
+    });
+
+    me.notifyCreation(params);
 };
 
 Character.prototype.createInitUpdateParams = function () {
@@ -51,7 +58,8 @@ Character.prototype.createInitUpdateParams = function () {
 
     return {
         position : me.pos,
-        charName : me.charName
+        charName : me.charName,
+        hits : me.hits
     };
 };
 
@@ -73,6 +81,7 @@ Character.prototype.shoot = function (x, y) {
     var me = this;
 
     return Register.createEntity( "Projectile", {
+        ownerId : me.id+0,
         direction : u.normalize( { x : x - me.pos.x, y : y - me.pos.y} ),
         velocity : 700,
         pos : {
@@ -108,10 +117,18 @@ Character.prototype.update = function (dt) {
 
 };
 
+Character.prototype.decHp = function(value){
+    var me = this,
+        value = value ? value : 1;
+    console.log("DEC HP CALL>>>>>>>.");
+    this.hits += value;
+
+    this.emit( 'entity:paramChanged', me, "hits", this.hits );
+};
 
 Character.prototype.onCollisionDetected = function (entity, cv, initiator) {
 
-    if( entity.getClassName() === "Projectile" ){
+    if( initiator && entity.getClassName() === "Projectile" && entity.ownerId != this.id ){
         this.decHp();
     }
 };

@@ -21,7 +21,7 @@ BoundingCircle.constructor = function () {
 
 BoundingCircle.prototype.init = function ( params ) {
     var me = this;
-
+    BoundingCircle.super_.prototype.init.apply(me, arguments);
     me.master = params.master;
     me.radius = params.radius;
 
@@ -32,10 +32,15 @@ BoundingCircle.prototype.checkCollision = function (shape) {
     var me = this,
         cV;
 
+
     if(shape instanceof BoundingCircle){
+        cV = me.checkCircleCollision(shape);
+        if( !cV ){
+            return;
+        }
         //pass correction vector to an object
-        me.master.onCollisionDetected( me.shape.master, cV = me.checkCircleCollision(shape), true );
-        shape.master.onCollisionDetected( me, u.mulVecScalar( cV, -1), false );
+        me.master.onCollisionDetected( shape.master, cV, true );
+        shape.master.onCollisionDetected( me.master, u.mulVecScalar( cV, -1), false );
     }
 
     //if(shape instanceof BoundingBox){
@@ -53,7 +58,7 @@ BoundingCircle.prototype.checkCircleCollision = function (shape) {
 
 
     if( deviation = ((me.radius + shape.radius) - u.calcDistance( selfPosition = me.master.getPosition(), otherPosition = shape.master.getPosition()) ) >= 0 ){
-        return {x : 0, y: 0};
+        return false;
     }
 
     dV = u.normalize( selfPosition.x - otherPosition.x, selfPosition.y - otherPosition.y );
@@ -89,7 +94,12 @@ BoundingCircle.prototype.calcSections = function (sw, sh, sections) {
 
 
     function addNeighbour(x, y){
-        if(sections[x] && sections[x][y] && sections[x][y].flaged){
+        //if no suchsection return
+        if( !sections[x] || !sections[x][y] ){
+            return;
+        }
+
+        if( sections[x][y].flaged ){
             return;
         }
         addSections(x, y);
@@ -102,8 +112,12 @@ BoundingCircle.prototype.calcSections = function (sw, sh, sections) {
 
     function addSections( x, y ){
 
-        //if no suck section return
-        if(sections[x] && sections[x][y] && sections[x][y].flaged){
+        //if no suchsection return
+        if( !sections[x] || !sections[x][y] ){
+            return;
+        }
+
+        if( sections[x][y].flaged ){
             return;
         }
 
@@ -206,7 +220,9 @@ BoundingCircle.prototype.calcSections = function (sw, sh, sections) {
     }
 
     if(taken.length === 0){
-        taken.push( sections[cx][cy] );
+        if( sections[x] && sections[x][y] ){
+            taken.push( sections[cx][cy] );
+        }
     }else{
         addNeighbour(cx, cy);
     }

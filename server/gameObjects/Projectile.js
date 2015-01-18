@@ -8,9 +8,9 @@ var util = require('util'),
     u = getCustomUtils(),
 
 
-    Entity = absRequire( './server/core/gameObjects/Entity' ),
-    BoundingBox = absRequire( './server/core/collisions/BoundingCircle' ),
-    Character = absRequire( './server/core/gameObjects/Character' );
+    Entity = absRequire( './server/gameObjects/Entity' ),
+    Character = absRequire( './server/gameObjects/Character' ),
+    BoundingBox = absRequire( './server/core/collisions/BoundingCircle' );
 
 
 
@@ -38,11 +38,19 @@ Projectile.prototype.init = function (params) {
 
     me.mv = params.direction; //normalized vector
     me.v = params.velocity; //numerical value
+    me.ownerId = params.ownerId;
 
     me.pos = params.pos;
 
-    me.bBox = new BoundingBox();
-    me.bBox.init(me, params.hw, params.hh);
+    me.createBoundingShape("BoundingCircle", {
+        radius : 2
+    });
+
+    me.notifyCreation(params)
+
+    if( !me.bShape ){
+        console.log("NO SHAPE HERE!!!! SHAME!!!");
+    }
 };
 
 Projectile.prototype.createInitUpdateParams = function () {
@@ -75,16 +83,11 @@ Projectile.prototype.update = function (dt) {
     me.emit( "entity:moveInitiated", me, me.getPosition() );
 };
 
-/**
- * @description Handler for a collision occurence.
- *
- * @param entity Entity collided with.
- * @param cv Vector2d Correction vector to be applied to this Entity to avoid collision.
- * @param initiator Who initiated the collisionCheck. Provides prioritization.
- */
+
 Projectile.prototype.onCollisionDetected = function (entity, cv, initiator) {
 
-    if(entity instanceof Character && initiator){
+    if( initiator && (entity.id != this.ownerId) && (entity instanceof Character) ){
+        console.log("Destroy call on Collision.", this.id);
         this.destroy();
     }
 };

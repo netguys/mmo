@@ -16,24 +16,24 @@ global.getCustomUtils = function() {
 };
 
 global.absRequire = function (pathToFile) {
-    return PATH.resolve( EXE_PATH, pathToFile )
+    return require( PATH.resolve( EXE_PATH, pathToFile ) );
 };
 
 global.createSingletoneExports = function (desc) {
     return (function () {
-
+        var name = desc.name;
         if(!global.Singletones){
             global.Singletones = {};
         }
 
-        if(global.Singletones[ desc.name ] ){
-            return global.Singletones[ desc.name ];
+        if(global.Singletones[ name ] ){
+            return global.Singletones[ name ];
         }
 
-        global.Singletones[ desc.name ] = new desc();
-        global.Singletones[ desc.name ].init();
+        global.Singletones[ name ] = new desc();
+        global.Singletones[ name ].init();
 
-        return global.Singletones[ desc.name ];
+        return global.Singletones[ name ];
     })();
 };
 

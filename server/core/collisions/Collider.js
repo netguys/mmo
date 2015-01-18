@@ -7,7 +7,9 @@
 
 var util = require('util'),
     path = require('path'),
-    Subscriber = require( path.resolve( __dirname, '../core/Subscriber' ) ),
+    Subscriber = absRequire('./server/core/Subscriber'),
+
+    gameFieldConfig = absRequire('./server/configs/game_field.json'),
 
     SECTION_HEIGHT = 10,
     SECTION_WIDTH = 10;
@@ -28,11 +30,16 @@ Collider.prototype.setupListeners = function () {
 
 Collider.prototype.init = function () {
     var me = this;
-    Collider._super.prototype.init.apply(me, arguments);
+    Collider.super_.prototype.init.apply(me, arguments);
 
     me.shapesPool = [];
 
-    me.gameFieldDimentions = me.params.gameFieldDimentions;
+    me.gameFieldDimentions = {
+        width : gameFieldConfig.width,
+        height : gameFieldConfig.height
+    };
+
+
 
     me.sections = me.createSections();
 };
@@ -45,10 +52,11 @@ Collider.prototype.createSections = function () {
         sectionCols = Math.ceil( me.gameFieldDimentions.height / SECTION_HEIGHT),
         i,j;
 
+    console.log("Created Sections: ", sectionRows, sectionCols);
 
     for( i = 0; i < sectionRows; i++){
         sections.push([]);
-        for( j = 0; i < sectionCols; j++){
+        for( j = 0; j < sectionCols; j++){
             sections[i].push({
                 x : i * SECTION_WIDTH,
                 y : j * SECTION_HEIGHT,
@@ -87,7 +95,9 @@ Collider.prototype.refillSections = function () {
 
     //clear sections;
     for( i = 0; i < me.sections.length; i++){
-        me.sections[i].elements = [];
+        for( j = 0; j < me.sections[i].length; j++){
+            me.sections[i][j].elements = [];
+        }
     }
 
     //add all existing collision shapes to a propriate section
@@ -119,7 +129,7 @@ Collider.prototype.checkSectionForCollision = function (section) {
 
     for( i = 0; i < elements.length; i++){
         for( j = 0; j < elements.length; j++ ){
-            if(i !== j){
+            if(i != j){
                 elements[i].checkCollision( elements[j] );
             }
         }
@@ -130,13 +140,15 @@ Collider.prototype.checkSectionForCollision = function (section) {
 // being called on a shape Creation.
 // TODO: create a shape by means of collider.createShape(shapeName)???
 Collider.prototype.addShape = function ( shape ) {
-    this.shapesPool.add( shape );
+    //console.log("AddShape call. ", shape);
+    this.shapesPool.push( shape );
 };
 
 
 // being called on a shape Destruction.
 // TODO: handle destrustion in COllider as well???
 Collider.prototype.removeShape = function ( shape ) {
+    //console.log("removeShape call. ", shape);
     // remove from overall pool
     var index = this.shapesPool.indexOf( shape );
     this.shapesPool.splice( index, 1 );
@@ -145,4 +157,4 @@ Collider.prototype.removeShape = function ( shape ) {
     // cleared with next "collisionUpdate()" iteration.
 };
 
-modules.exports = createSingletoneExports(Collider);
+module.exports = createSingletoneExports(Collider);

@@ -11,7 +11,7 @@ function BoundingShape(){}
 
 BoundingShape.prototype.init = function (params) {
     this.master = params.master;
-    Singletones.Collisder.addShape ( this );
+    Singletones.Collider.addShape ( this );
 };
 
 BoundingShape.prototype.checkCollision = function (shape) {};

@@ -34,7 +34,7 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
         bgCtx = bgCanvas.getContext("2d");
 
         //TODO: make a server
-        socket = io( "http://192.168.1.147:8124", { transports: ["websocket"] } );
+        socket = io( "http://localhost:8124", { transports: ["websocket"] } );
 
         // Initialise keyboard controls
         keys = new Keys();
@@ -57,6 +57,8 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
         //window.addEventListener("keyup", this.onKeyup, false);
 
         window.addEventListener( 'mousedown', this.onMouseDown, false);
+        //window.addEventListener( 'mousemove', this.onMouseMove, false);
+        window.addEventListener( 'mouseup', this.onMouseUp, false);
 
 
         // Window resize
@@ -144,11 +146,61 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
     };
 
     
+    Game.prototype.onMouseMove = function (e) {
+        e.preventDefault();
+
+        //left mouse button click
+        if(e.button === 0 && this.lbPressed){
+
+            //socket.emit("client:command", {
+            //    name : "shoot",
+            //    params : {
+            //        x: e.offsetX,
+            //        y: e.offsetY
+            //    }
+            //});
+            return;
+        }
+
+        //right mouse button click
+        if(e.button === 2 && this.rbPressed){
+            socket.emit("client:command", {
+                name : "move",
+                params : {
+                    x: e.offsetX,
+                    y: e.offsetY
+                }
+            });
+            return;
+        }
+
+        return false;
+    };
+
+    Game.prototype.onMouseUp = function (e) {
+        e.preventDefault();
+
+        //left mouse button click
+        if(e.button === 0 && this.lbPressed){
+            this.lbPressed = false;
+            return;
+        }
+
+        //right mouse button click
+        if(e.button === 2 && this.rbPressed){
+            this.rbPressed = false;
+            return;
+        }
+
+        return false;
+    };
+    
     Game.prototype.onMouseDown = function (e) {
         e.preventDefault();
 
         //left mouse button click
         if(e.button === 0){
+            this.lbPressed = true;
             socket.emit("client:command", {
                 name : "shoot",
                 params : {
@@ -161,6 +213,7 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
 
         //right mouse button click
         if(e.button === 2){
+            this.rbPressed = true;
             socket.emit("client:command", {
                 name : "move",
                 params : {

@@ -36,8 +36,8 @@ Player.prototype.init = function (params) {
 
 Player.prototype.gameStart = function () {
     var me = this,
-        //randomPos = { x : 50 Math.round( 200 * Math.random() ) , y : Math.round( 200 * Math.random() ) };
-        randomPos = { x : 150 , y : 150 };
+        randomPos = { x : Math.round( 400 * Math.random() + 10 ) , y : Math.round( 400 * Math.random() + 10 ) };
+        //randomPos = { x : 150 , y : 150 };
 
     me.character = Register.createEntity( 'Character', {
         charName : me.name,
@@ -53,6 +53,7 @@ Player.prototype.setupListeners = function () {
     me.on( 'entity:destroyed', me.onEntityDestroyed.bind(me) );
 
     me.on( 'entity:moveInitiated' , me.onEntityMoved.bind(me) );
+    me.on( 'entity:paramChanged' , me.onEntityParamChanged.bind(me));
 
 
     //attempt to flush possible changes on the end of update.
@@ -113,11 +114,16 @@ Player.prototype.onEntityDestroyed = function (entity) {
     if(!this.inGame){
         return;
     }
+    console.log("Appending destroy change. ", entity.id);
     this.changes.appendChange( entity, "destroyed" );
 };
 
 Player.prototype.onEntityMoved = function (entity, newPos) {
     this.changes.appendChange( entity, "position", newPos )
+};
+
+Player.prototype.onEntityParamChanged = function (entity, paramName, newValue) {
+    this.changes.appendChange( entity, paramName, newValue );
 };
 
 //TODO: make Entity.makeUpdate method which will create an object containing all the info of entity's current state.
@@ -131,6 +137,7 @@ Player.prototype.pushInitUpdateChanges = function (list) {
     for( i=0; i < list.length; i++){
         entity = list[i];
         createParams = entity.createInitUpdateParams();
+        console.log("Pushed createpParams.", createParams );
         me.changes.appendChange( entity, "created",  createParams);
     }
 };

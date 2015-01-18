@@ -50,6 +50,7 @@ Register.prototype.destroyEntity = function () {
 };
 
 Register.prototype.onEntitySelfDestruction = function (entity) {
+    console.log("Removing form register.", entity.id);
     delete this.pool[entity.id];
 };
 
