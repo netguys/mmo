@@ -21,7 +21,9 @@ define(function() {
 
 
     Projectile.prototype.draw = function(ctx) {
-        ctx.fillRect(this.x - 2, this.y - 2, 4, 4);
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+        ctx.fill();
     };
     
     Projectile.prototype.destroy = function () {};

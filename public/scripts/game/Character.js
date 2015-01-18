@@ -35,12 +35,17 @@ define(function() {
 
     Character.prototype.draw = function(ctx) {
         ctx.save();
-        ctx.fillRect(this.x - 5, this.y - 5, 10, 10);
+
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI, false);
+        ctx.fill();
+
+        ctx.beginPath()
         ctx.fillStyle = "#00F";
         ctx.font = "10pt Arial";
         ctx.textAlign = "center";
         ctx.fillText(this.name, this.x, this.y - 20);
-        ctx.fillText(this.hits, this.x + 10, this.y)
+        ctx.fillText(this.hits, this.x + 20, this.y)
         ctx.restore();
     };
 
