@@ -40,7 +40,7 @@ BoundingCircle.prototype.checkCollision = function (shape) {
         }
         //pass correction vector to an object
         me.master.onCollisionDetected( shape.master, cV, true );
-        shape.master.onCollisionDetected( me.master, u.mulVecScalar( cV, -1), false );
+        //shape.master.onCollisionDetected( me.master, u.mulVecScalar( cV, -1), false );
     }
 
     //if(shape instanceof BoundingBox){
