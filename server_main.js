@@ -60,6 +60,15 @@ server.init({
     httpServer : httpServer
 });
 
+
+var dummyChar = Register.createEntity( 'Character', {
+    charName : "DUMMY",
+    position : {
+        x : 200,
+        y : 300
+    }
+});
+
 server.start(8124);
 
 

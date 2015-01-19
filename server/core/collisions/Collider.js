@@ -11,8 +11,8 @@ var util = require('util'),
 
     gameFieldConfig = absRequire('./server/configs/game_field.json'),
 
-    SECTION_HEIGHT = 10,
-    SECTION_WIDTH = 10;
+    SECTION_HEIGHT = 20,
+    SECTION_WIDTH = 20;
 
 function Collider(){}
 util.inherits(Collider, Subscriber);

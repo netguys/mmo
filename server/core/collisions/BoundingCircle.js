@@ -32,7 +32,6 @@ BoundingCircle.prototype.checkCollision = function (shape) {
     var me = this,
         cV;
 
-
     if(shape instanceof BoundingCircle){
         cV = me.checkCircleCollision(shape);
         if( !cV ){
@@ -43,10 +42,6 @@ BoundingCircle.prototype.checkCollision = function (shape) {
         //shape.master.onCollisionDetected( me.master, u.mulVecScalar( cV, -1), false );
     }
 
-    //if(shape instanceof BoundingBox){
-    //    return me.checkBoxCollision(shape);
-    //
-    //}
 };
 
 BoundingCircle.prototype.checkCircleCollision = function (shape) {

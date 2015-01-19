@@ -11,6 +11,8 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
         keys,			// Keyboard input
 
         entities = {},
+
+        sectionsToDraw,
         socket;	// Local player
 
     function Game() {}
@@ -67,6 +69,17 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
         socket.on("connect", onSocketConnected);
         socket.on('server:initUpdate', onServerInitUpdate);
         socket.on("server:update", onServerUpdate);
+
+        //debug info
+
+        socket.on( 'debug:sectionsInfo', onSectionsInfo);
+
+    };
+
+
+    function onSectionsInfo(info){
+        var w = info.w, h = info.h,
+            sections = info.sections;
 
     };
 
@@ -258,6 +271,39 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
         //}
 //        localPlayer.update(keys);
     };
+    
+    Game.prototype.setSectionsInfo = function (info) {
+        this.sectionsInfo = info;
+    }
+    
+    Game.prototype.drawTakenSections = function (ctx) {
+        var me = this,
+            sections, w, h,
+            i, j;
+
+        if(!me.sectionsInfo){
+            return;
+        }
+
+        sections = me.sectionsInfo.sections;
+        w = me.sectionsInfo.w;
+        h = me.sectionsInfo.h;
+
+        ctx.save();
+
+        for( i = 0; i < sections.length; i++){
+            for( j = 0; j < sections[i].length; j++){
+                ctx.fillStyle = "rgba(0, 0, 0, 1)";
+                if(sections[i][j].elements.length > 0){
+                    ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
+                }
+
+
+            }
+        }
+
+
+    };
 
     /**************************************************
      ** GAME DRAW
@@ -265,6 +311,8 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
     Game.prototype.draw = function () {
         bgCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
         screenCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
+
+        this.drawTakenSections(bgCtx);
 
         var id;
         for(id in entities){

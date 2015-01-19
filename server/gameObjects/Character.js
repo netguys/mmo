@@ -127,9 +127,18 @@ Character.prototype.decHp = function(value){
 };
 
 Character.prototype.onCollisionDetected = function (entity, cv, initiator) {
+    var me = this;
 
-    if( initiator && entity.getClassName() === "Projectile" && entity.ownerId != this.id ){
-        this.decHp();
+    if( initiator && entity.getClassName() === "Projectile" && entity.ownerId != me.id ){
+        me.decHp();
+    }
+
+    if( entity.getClassName() === "Character" ){
+
+        me.pos.x += cv.x;
+        me.pos.y += cv.y;
+
+        me.emit("entity:moveInitiated", me, me.getPosition() );
     }
 };
 
