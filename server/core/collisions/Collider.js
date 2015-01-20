@@ -83,6 +83,10 @@ Collider.prototype.collisionUpdate = function () {
     //place all shapes to a "covered" sections.
     me.refillSections();
 
+    Debug.do(function () {
+       //should have updated sections here.
+       Debug.writeInfo( "sections", me.sections );
+    });
     //actual collision check.
     me.checkForCollision();
 };

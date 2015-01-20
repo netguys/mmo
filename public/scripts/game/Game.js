@@ -68,19 +68,14 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
 
         socket.on("connect", onSocketConnected);
         socket.on('server:initUpdate', onServerInitUpdate);
-        socket.on("server:update", onServerUpdate);
+        socket.on("server:update", this.onServerUpdate);
 
-        //debug info
-
-        socket.on( 'debug:sectionsInfo', onSectionsInfo);
 
     };
 
 
-    function onSectionsInfo(info){
-        var w = info.w, h = info.h,
-            sections = info.sections;
-
+    Game.prototype.onDebugInfo = function( info ){
+       this.sectionsInfo = info.sections;
     };
 
     function playerById(id) {
@@ -118,11 +113,15 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
 
     };
 
-    function onServerUpdate(update){
+    Game.prototype.onServerUpdate = function onServerUpdate(update){
         var id;
 
         for(id in update){
-            processSingleEntityUpdate(id, update[id]);
+            if(id === "debugInfo"){
+                this.onDebugInfo(update[id]);
+            }else{
+                processSingleEntityUpdate(id, update[id]);
+            }
         }
 
         socket.emit("client:updateProceed");
@@ -279,29 +278,42 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
     Game.prototype.drawTakenSections = function (ctx) {
         var me = this,
             sections, w, h,
+
+            section,
             i, j;
 
         if(!me.sectionsInfo){
             return;
         }
 
-        sections = me.sectionsInfo.sections;
+        sections = me.sectionsInfo;
         w = me.sectionsInfo.w;
         h = me.sectionsInfo.h;
 
         ctx.save();
 
+        ctx.strokeStyle = "black";
+
         for( i = 0; i < sections.length; i++){
             for( j = 0; j < sections[i].length; j++){
+                section = sections[i][j];
+
                 ctx.fillStyle = "rgba(0, 0, 0, 1)";
                 if(sections[i][j].elements.length > 0){
                     ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
                 }
 
+                ctx.beginPath();
 
+                ctx.fillRect(section.x, section.y, section.width, section.height);
+                ctx.rect(section.x, section.y, section.width, section.height);
+
+                ctx.stroke();
             }
         }
 
+
+        ctx.restore();
 
     };
 

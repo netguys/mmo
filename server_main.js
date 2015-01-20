@@ -37,6 +37,9 @@ global.createSingletoneExports = function (desc) {
     })();
 };
 
+//initialize Global Debugger instance.
+global.Debug = ( absRequire( './server/core/Debugger' ) ).init();
+
 //creation of singletones section
 var Factory = absRequire( "./server/core/Factory" ),
     Register = absRequire( "./server/core/Register" ),
@@ -60,7 +63,7 @@ server.init({
     httpServer : httpServer
 });
 
-
+console.log("DEbug.getInfo()", Debug.getInfo());
 var dummyChar = Register.createEntity( 'Character', {
     charName : "DUMMY",
     position : {
@@ -68,6 +71,7 @@ var dummyChar = Register.createEntity( 'Character', {
         y : 300
     }
 });
+
 
 server.start(8124);
 

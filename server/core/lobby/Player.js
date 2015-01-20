@@ -175,7 +175,8 @@ Player.prototype.onUpdateProceed = function () {
  * Private methods.
  */
 Player.prototype.flushChanges = function () {
-    var me = this;
+    var me = this,
+        changes;
 
     if( !me.readyForUpdate || !me.changes.present() ){
         return;
@@ -183,7 +184,10 @@ Player.prototype.flushChanges = function () {
 
     me.readyForUpdate = false;
 
-    me.clientSocket.send( 'server:update', me.changes.popChanges() );
+    changes = me.changes.popChanges();
+    //changes.debugInfo = Debug.getInfo();
+
+    me.clientSocket.send( 'server:update', changes );
 };
 
 

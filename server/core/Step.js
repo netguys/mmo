@@ -44,7 +44,7 @@ Step.prototype.pulse = function () {
     }
     //setImmediate sets a function to be executed on a next iteration of an EventLoop,
     //setting it in queue with other I\O or timeout callbacks in order of acceptance.
-    //kind of analog for the browser "RequestAnimationFrame"
+    //kind of analog for the browser "requestAnimationFrame"
     setImmediate(function () {
         me.pulse();
     });
