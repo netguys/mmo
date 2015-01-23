@@ -178,14 +178,20 @@ Player.prototype.flushChanges = function () {
     var me = this,
         changes;
 
-    if( !me.readyForUpdate || !me.changes.present() ){
+    if( !me.readyForUpdate ){
         return;
     }
 
     me.readyForUpdate = false;
 
-    changes = me.changes.popChanges();
-    //changes.debugInfo = Debug.getInfo();
+    if( me.changes.present() ){
+        changes = me.changes.popChanges();
+    }else{
+        changes = {};
+    }
+
+    //append debug info.
+    changes.debugInfo = Debug.getInfo();
 
     me.clientSocket.send( 'server:update', changes );
 };

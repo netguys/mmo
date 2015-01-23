@@ -85,7 +85,20 @@ Collider.prototype.collisionUpdate = function () {
 
     Debug.do(function () {
        //should have updated sections here.
-       Debug.writeInfo( "sections", me.sections );
+        var sections = [],
+            i, j;
+
+        for( i = 0; i < me.sections.length; i++){
+            sections.push([]);
+            for( j = 0; j < me.sections[i].length; j++){
+                sections[i].push( me.sections[i][j].elements.length > 0 );
+            }
+        }
+       Debug.writeInfo( "sections", {
+           SW : SECTION_WIDTH,
+           SH : SECTION_HEIGHT,
+           sections : sections
+       });
     });
     //actual collision check.
     me.checkForCollision();

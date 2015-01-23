@@ -43,7 +43,7 @@ Projectile.prototype.init = function (params) {
     me.pos = params.pos;
 
     me.createBoundingShape("BoundingCircle", {
-        radius : 2
+        radius : 40
     });
 
     me.notifyCreation(params)

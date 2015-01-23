@@ -47,7 +47,7 @@ Character.prototype.init = function (params) {
     me.charName = params.charName;
 
     me.createBoundingShape("BoundingCircle", {
-        radius : 5
+        radius : 20
     });
 
     me.notifyCreation(params);
@@ -83,7 +83,7 @@ Character.prototype.shoot = function (x, y) {
     return Register.createEntity( "Projectile", {
         ownerId : me.id+0,
         direction : u.normalize( { x : x - me.pos.x, y : y - me.pos.y} ),
-        velocity : 700,
+        velocity : 100,
         pos : {
             x : me.pos.x,
             y : me.pos.y

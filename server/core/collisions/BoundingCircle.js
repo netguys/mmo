@@ -215,7 +215,8 @@ BoundingCircle.prototype.calcSections = function (sw, sh, sections) {
     }
 
     if(taken.length === 0){
-        if( sections[x] && sections[x][y] ){
+        if( sections[cx] && sections[cx][cy] ){
+
             taken.push( sections[cx][cy] );
         }
     }else{

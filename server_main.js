@@ -63,7 +63,6 @@ server.init({
     httpServer : httpServer
 });
 
-console.log("DEbug.getInfo()", Debug.getInfo());
 var dummyChar = Register.createEntity( 'Character', {
     charName : "DUMMY",
     position : {

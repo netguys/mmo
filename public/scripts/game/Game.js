@@ -68,14 +68,14 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
 
         socket.on("connect", onSocketConnected);
         socket.on('server:initUpdate', onServerInitUpdate);
-        socket.on("server:update", this.onServerUpdate);
+        socket.on("server:update", this.onServerUpdate.bind(this) );
 
 
     };
 
 
     Game.prototype.onDebugInfo = function( info ){
-       this.sectionsInfo = info.sections;
+        this.setSectionsInfo( info.sections )
     };
 
     function playerById(id) {
@@ -286,29 +286,49 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
             return;
         }
 
-        sections = me.sectionsInfo;
-        w = me.sectionsInfo.w;
-        h = me.sectionsInfo.h;
+        sections = me.sectionsInfo.sections;
+        w = me.sectionsInfo.SW;
+        h = me.sectionsInfo.SH;
 
         ctx.save();
 
         ctx.strokeStyle = "black";
+        ctx.lineWidth = 1;
+
+        //draw a net
+        for( i = 0; i < sections.length; i++){
+            ctx.beginPath();
+
+            ctx.moveTo( i*w + 0.5, 0 );
+            ctx.lineTo( i*w + 0.5, screenCanvas.height);
+
+            ctx.stroke();
+        }
+        for( j = 0; j < sections[0].length; j++){
+            ctx.beginPath();
+
+            ctx.moveTo( 0, j*h + 0.5);
+            ctx.lineTo( screenCanvas.width, j*h + 0.5);
+
+            ctx.stroke();
+        }
+
 
         for( i = 0; i < sections.length; i++){
             for( j = 0; j < sections[i].length; j++){
                 section = sections[i][j];
 
-                ctx.fillStyle = "rgba(0, 0, 0, 1)";
-                if(sections[i][j].elements.length > 0){
+                if(sections[i][j]){
                     ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
+
+                    ctx.beginPath();
+
+                    ctx.fillRect(i*w+0.5, j*h+0.5, w, h);
+                    ctx.rect(i*w+0.5, j*h+0.5, w, h);
+
+                    ctx.stroke();
                 }
 
-                ctx.beginPath();
-
-                ctx.fillRect(section.x, section.y, section.width, section.height);
-                ctx.rect(section.x, section.y, section.width, section.height);
-
-                ctx.stroke();
             }
         }
 

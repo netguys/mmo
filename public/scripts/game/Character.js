@@ -36,12 +36,13 @@ define(function() {
     Character.prototype.draw = function(ctx) {
         ctx.save();
 
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI, false);
+        ctx.beginPath();
+        ctx.fillStyle = "#00F";
+        ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI, false);
         ctx.fill();
 
         ctx.beginPath()
-        ctx.fillStyle = "#00F";
+
         ctx.font = "10pt Arial";
         ctx.textAlign = "center";
         ctx.fillText(this.name, this.x, this.y - 20);

@@ -22,7 +22,7 @@ define(function() {
 
     Projectile.prototype.draw = function(ctx) {
         ctx.beginPath()
-        ctx.arc(this.x, this.y, 2, 0, 2 * Math.PI, false);
+        ctx.arc(this.x, this.y, 40, 0, 2 * Math.PI, false);
         ctx.fill();
     };
     
