@@ -12,6 +12,15 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
 
         entities = {},
 
+        frameCount = 0,
+        FRAMES_CAP = 120,
+        FPS = 0,
+        dtSum = 0,
+
+
+        suDelay = 0,
+        prevUpdateTime = 0,
+
         sectionsToDraw,
         socket;	// Local player
 
@@ -59,7 +68,7 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
         //window.addEventListener("keyup", this.onKeyup, false);
 
         window.addEventListener( 'mousedown', this.onMouseDown, false);
-        //window.addEventListener( 'mousemove', this.onMouseMove, false);
+        window.addEventListener( 'mousemove', this.onMouseMove, false);
         window.addEventListener( 'mouseup', this.onMouseUp, false);
 
 
@@ -126,6 +135,9 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
 
         socket.emit("client:updateProceed");
 
+        suDelay = Date.now() - prevUpdateTime;
+        prevUpdateTime = Date.now();
+
     };
 
 
@@ -164,13 +176,13 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
         //left mouse button click
         if(e.button === 0 && this.lbPressed){
 
-            //socket.emit("client:command", {
-            //    name : "shoot",
-            //    params : {
-            //        x: e.offsetX,
-            //        y: e.offsetY
-            //    }
-            //});
+            socket.emit("client:command", {
+                name : "shoot",
+                params : {
+                    x: e.offsetX,
+                    y: e.offsetY
+                }
+            });
             return;
         }
 
@@ -337,19 +349,54 @@ define(['gameLoop', 'Player', 'Keys', 'Factory'], function (gameLoop, Player, Ke
 
     };
 
+    function drawText(count, ctx, x, y){
+        ctx.save();
+
+        ctx.fillStyle = "black";
+
+        ctx.font = "20pt Arial";
+        ctx.textAlign = "center";
+        ctx.fillText( count+"", x, y);
+        ctx.restore();
+    }
+
     /**************************************************
      ** GAME DRAW
      **************************************************/
     Game.prototype.draw = function () {
+        var d = Date.now(), dt;
+
         bgCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
         screenCtx.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
 
         this.drawTakenSections(bgCtx);
 
-        var id;
+        var id, counter = 0;
+
         for(id in entities){
+            counter++;
             entities[id].draw(bgCtx);
         }
+
+        drawText(counter, bgCtx, 100, 30);
+
+        dt = Date.now() - d;
+
+        dtSum += dt;
+        frameCount++;
+
+        if(frameCount >= FRAMES_CAP){
+            if(dtSum>0){
+                FPS =  Math.round( 1/ ((dtSum/frameCount)/1000 ));
+                frameCount = 0;
+                dtSum = 0;
+            }
+
+        }
+        drawText(FPS, bgCtx, 200, 30);
+
+
+        drawText(suDelay, bgCtx, 500, 30);
 
         screenCtx.drawImage(bgCanvas, 0, 0);
     };

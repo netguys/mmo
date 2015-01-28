@@ -78,12 +78,13 @@ Character.prototype.moveTo = function (x, y) {
 };
 
 Character.prototype.shoot = function (x, y) {
-    var me = this;
+    var me = this,
+         direction = u.normalize( { x : x - me.pos.x, y : y - me.pos.y} );
 
     return Register.createEntity( "Projectile", {
         ownerId : me.id+0,
-        direction : u.normalize( { x : x - me.pos.x, y : y - me.pos.y} ),
-        velocity : 100,
+        direction : direction,
+        velocity : 1000,
         pos : {
             x : me.pos.x,
             y : me.pos.y
@@ -98,6 +99,8 @@ Character.prototype.update = function (dt) {
     var me = this,
         dS; //delta distance
 
+    me.pathLeft = u.calcDistance( me.pos, me.dst );
+    me.mv = u.normalize( me.dst.x - me.pos.x, me.dst.y - me.pos.y );
 
     if(me.pathLeft > 0){
         dS = me.v * dt/1000;
@@ -113,20 +116,17 @@ Character.prototype.update = function (dt) {
                                             //new cooridnates
         me.emit("entity:moveInitiated", me, me.getPosition() );
     }
-
-
 };
 
 Character.prototype.decHp = function(value){
     var me = this,
         value = value ? value : 1;
-    console.log("DEC HP CALL>>>>>>>.");
     this.hits += value;
 
     this.emit( 'entity:paramChanged', me, "hits", this.hits );
 };
 
-Character.prototype.onCollisionDetected = function (entity, cv, initiator) {
+Character.prototype.onCollisionDetected = function (entity, cv, initiator, firstOccurance) {
     var me = this;
 
     if( initiator && entity.getClassName() === "Projectile" && entity.ownerId != me.id ){
@@ -134,7 +134,6 @@ Character.prototype.onCollisionDetected = function (entity, cv, initiator) {
     }
 
     if( entity.getClassName() === "Character" ){
-
         me.pos.x += cv.x;
         me.pos.y += cv.y;
 

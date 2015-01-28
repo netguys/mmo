@@ -11,6 +11,7 @@ function BoundingShape(){}
 
 BoundingShape.prototype.init = function (params) {
     this.master = params.master;
+    this.masterId = this.master.id;
     Singletones.Collider.addShape ( this );
 };
 

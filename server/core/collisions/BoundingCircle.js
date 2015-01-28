@@ -28,7 +28,7 @@ BoundingCircle.prototype.init = function ( params ) {
 };
 
 
-BoundingCircle.prototype.checkCollision = function (shape) {
+BoundingCircle.prototype.checkCollision = function ( shape ) {
     var me = this,
         cV;
 
@@ -37,8 +37,11 @@ BoundingCircle.prototype.checkCollision = function (shape) {
         if( !cV ){
             return;
         }
+
+        //
+        Singletones.Collider.registerCollision( me, shape, cV );
         //pass correction vector to an object
-        me.master.onCollisionDetected( shape.master, cV, true );
+        //me.master.onCollisionDetected( shape.master, cV, true );
         //shape.master.onCollisionDetected( me.master, u.mulVecScalar( cV, -1), false );
     }
 
@@ -51,12 +54,13 @@ BoundingCircle.prototype.checkCircleCollision = function (shape) {
         deviation = .0,
         dV;
 
+    deviation = (u.calcDistance( selfPosition = me.master.getPosition(), otherPosition = shape.master.getPosition()) - (me.radius + shape.radius) );
 
-    if( deviation = ((me.radius + shape.radius) - u.calcDistance( selfPosition = me.master.getPosition(), otherPosition = shape.master.getPosition()) ) >= 0 ){
+    if( deviation > 0 ){
         return false;
     }
 
-    dV = u.normalize( selfPosition.x - otherPosition.x, selfPosition.y - otherPosition.y );
+    dV = u.normalize( otherPosition.x - selfPosition.x, otherPosition.y - selfPosition.y );
 
     dV.x *= deviation;
     dV.y *= deviation;

@@ -16,7 +16,6 @@ define(classNames, function() {
         classesDesc[classNames[i]] = arguments[i];
     }
 
-    console.log("created desc ", classesDesc);
 
 
     function Factory () {}

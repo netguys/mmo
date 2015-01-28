@@ -7,7 +7,7 @@ function Debugger(){}
 
 Debugger.prototype.init = function () {
     this.info = {};
-    this.setEnabled(true);
+    this.setEnabled(false);
 
     return this;
 };

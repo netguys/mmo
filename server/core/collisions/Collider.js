@@ -6,6 +6,9 @@
  */
 
 var util = require('util'),
+
+    u = getCustomUtils(),
+
     path = require('path'),
     Subscriber = absRequire('./server/core/Subscriber'),
 
@@ -33,6 +36,7 @@ Collider.prototype.init = function () {
     Collider.super_.prototype.init.apply(me, arguments);
 
     me.shapesPool = [];
+    me.collisionRecords = {};
 
     me.gameFieldDimentions = {
         width : gameFieldConfig.width,
@@ -52,7 +56,6 @@ Collider.prototype.createSections = function () {
         sectionCols = Math.ceil( me.gameFieldDimentions.height / SECTION_HEIGHT),
         i,j;
 
-    console.log("Created Sections: ", sectionRows, sectionCols);
 
     for( i = 0; i < sectionRows; i++){
         sections.push([]);
@@ -80,6 +83,9 @@ Collider.prototype.createSections = function () {
 Collider.prototype.collisionUpdate = function () {
     var me = this;
 
+    //clear collision records.
+    me.collisionRecords = {};
+
     //place all shapes to a "covered" sections.
     me.refillSections();
 
@@ -102,6 +108,9 @@ Collider.prototype.collisionUpdate = function () {
     });
     //actual collision check.
     me.checkForCollision();
+
+
+    me.notifyRegisteredCollisions();
 };
 
 
@@ -144,12 +153,70 @@ Collider.prototype.checkSectionForCollision = function (section) {
     var elements = section.elements,
         i,j;
 
+    if(elements.length <= 1){
+        return;
+    }
     for( i = 0; i < elements.length; i++){
         for( j = 0; j < elements.length; j++ ){
             if(i != j){
                 elements[i].checkCollision( elements[j] );
             }
         }
+    }
+};
+
+Collider.prototype.notifyRegisteredCollisions = function () {
+    var me = this,
+        collisionRecords = me.collisionRecords,
+        hashKey, record,
+
+        refShape, intShape, cV;
+
+    for( hashKey in collisionRecords){
+        record = collisionRecords[hashKey];
+
+        refShape = record.refShape;
+        intShape = record.intShape;
+        cV = record.cV;
+
+        refShape.master.onCollisionDetected( intShape.master, cV, true );
+        intShape.master.onCollisionDetected( refShape.master, u.mulVecScalar( cV, -1), false );
+    }
+};
+
+/**
+ *
+ * @param refShape Reference bounding shape.
+ * @param intShape interacting bounding shape.
+ * @returns {string} Hashed string.
+ */
+
+Collider.prototype.hashCollisionRecord = function (refShape, intShape) {
+    return refShape.masterId + "/" + intShape.masterId;
+};
+
+
+/**
+ *
+ * @param refShape Reference shape
+ * @param intShape Interacting shape
+ * @param cV Correction vector
+ */
+Collider.prototype.registerCollision = function ( refShape, intShape, cV ) {
+    var me = this,
+        hash = me.hashCollisionRecord(refShape, intShape),
+        record = me.collisionRecords[hash];
+
+    //Shapes collide same every section check, so if there is a record already - skip addition.
+    if( record ){
+        return;
+    }
+
+    //addition of new record about collision.
+    me.collisionRecords[hash] = {
+        refShape : refShape,
+        intShape : intShape,
+        cV : cV
     }
 };
 
@@ -170,7 +237,7 @@ Collider.prototype.removeShape = function ( shape ) {
     var index = this.shapesPool.indexOf( shape );
     this.shapesPool.splice( index, 1 );
 
-    // do not delete from containing sectors, since they will be
+    // do not delete from containing sections, since they will be
     // cleared with next "collisionUpdate()" iteration.
 };
 

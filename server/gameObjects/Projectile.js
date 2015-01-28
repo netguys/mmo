@@ -43,7 +43,7 @@ Projectile.prototype.init = function (params) {
     me.pos = params.pos;
 
     me.createBoundingShape("BoundingCircle", {
-        radius : 40
+        radius : 2
     });
 
     me.notifyCreation(params)
@@ -84,11 +84,12 @@ Projectile.prototype.update = function (dt) {
 };
 
 
-Projectile.prototype.onCollisionDetected = function (entity, cv, initiator) {
+Projectile.prototype.onCollisionDetected = function (entity, cv, isReference) {
 
-    if( initiator && (entity.id != this.ownerId) && (entity instanceof Character) ){
-        console.log("Destroy call on Collision.", this.id);
-        this.destroy();
+    if( isReference  ){
+        if( (entity.id != this.ownerId) && (entity instanceof Character) ){
+            this.destroy();
+        }
     }
 };
 

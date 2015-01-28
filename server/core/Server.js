@@ -54,7 +54,6 @@ Server.prototype.onConnection = function (socket) {
         clientSocket,
         newPlayer;
 
-    console.log("Player connected: ", userId);
 
     clientSocket = Factory.createInstance( "ClientSocket", {
         userId : userId,

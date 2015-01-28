@@ -114,7 +114,6 @@ Player.prototype.onEntityDestroyed = function (entity) {
     if(!this.inGame){
         return;
     }
-    console.log("Appending destroy change. ", entity.id);
     this.changes.appendChange( entity, "destroyed" );
 };
 
@@ -137,7 +136,6 @@ Player.prototype.pushInitUpdateChanges = function (list) {
     for( i=0; i < list.length; i++){
         entity = list[i];
         createParams = entity.createInitUpdateParams();
-        console.log("Pushed createpParams.", createParams );
         me.changes.appendChange( entity, "created",  createParams);
     }
 };
@@ -153,7 +151,7 @@ Player.prototype.onCommand = function (command) {
     var me = this,
         handler;
 
-    console.log("commend from player=%s : ", this.userId, command);
+    //console.log("commend from player=%s : ", this.userId, command);
     if(handler = me.commands[command.name]){
         handler( command.params );
     }

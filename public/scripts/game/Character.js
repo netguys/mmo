@@ -37,16 +37,17 @@ define(function() {
         ctx.save();
 
         ctx.beginPath();
-        ctx.fillStyle = "#00F";
+        ctx.fillStyle = "rgba(130, 0, 200, 0.5)";
         ctx.arc(this.x, this.y, 20, 0, 2 * Math.PI, false);
         ctx.fill();
 
         ctx.beginPath()
 
+        ctx.fillStyle = "rgba(130, 0, 0, 1)";
         ctx.font = "10pt Arial";
         ctx.textAlign = "center";
         ctx.fillText(this.name, this.x, this.y - 20);
-        ctx.fillText(this.hits, this.x + 20, this.y)
+        ctx.fillText(this.hits, this.x + 30, this.y)
         ctx.restore();
     };
 

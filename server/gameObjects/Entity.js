@@ -74,7 +74,6 @@ Entity.prototype.destroy = function () {
     me.bShape.destroy();
     //delete me.bShape;
 
-    console.log("entity:destroyed", this.id);
     me.emit("entity:destroyed", me);
 };
 
